@@ -9,9 +9,14 @@ import SwiftUI
 
 @main
 struct S4_MAD_ALPApp: App {
+    @StateObject private var cvm = DrawingViewModel()
+    @StateObject private var cmvm = ColorMixingViewModel()
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(cvm)
+                .environmentObject(cmvm)
         }
     }
 }
