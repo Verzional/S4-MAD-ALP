@@ -14,6 +14,7 @@
 //
 
 import SwiftUI
+import Firebase
 
 struct CanvasView: View {
     @ObservedObject var viewModel: CanvasViewModel
