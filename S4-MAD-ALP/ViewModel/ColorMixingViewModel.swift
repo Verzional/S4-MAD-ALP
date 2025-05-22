@@ -7,7 +7,7 @@
 
 import Foundation
 
-class ColorInventoryViewModel: ObservableObject {
+class ColorMixingViewModel: ObservableObject {
     @Published var unlockedColors: [ColorItem] = []
 
     init() {

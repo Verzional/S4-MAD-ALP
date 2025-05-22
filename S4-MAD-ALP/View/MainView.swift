@@ -8,11 +8,18 @@
 import SwiftUI
 
 struct MainView: View {
+    @EnvironmentObject var cvm: CanvasViewModel
+    @EnvironmentObject var cmvm: ColorMixingViewModel
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        TabView {
+            CanvasView().tabItem {
+                Label("Canvas", systemImage:"paintbrush.pointed.fill")
+            }
+            
+            ColorMixingView().tabItem {
+                Label("Mixing", systemImage: "paintpalette.fill")
+            }
+        }
     }
-}
-
-#Preview {
-    MainView()
 }
