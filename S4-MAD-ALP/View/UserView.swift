@@ -1,12 +1,14 @@
 import SwiftUI
+import PhotosUI
 
 struct UserView: View {
     @EnvironmentObject private var userAuth: UserViewModel
-
     @State private var isRegister = false
     @State private var showAlert = false
-    @State private var isLogin = false
     @State private var errorMessage: String = ""
+    @State private var selectedItem: PhotosPickerItem?
+    @State private var tempProfileImage: Image? // Temporary image during selection
+    @State private var profileImageData: Data?
 
     var body: some View {
         NavigationStack {
@@ -27,7 +29,6 @@ struct UserView: View {
                             .fill(Color.orange)
                             .frame(width: 30, height: 4)
                     }
-
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 24)
 
@@ -35,6 +36,47 @@ struct UserView: View {
 
                     VStack(spacing: 20) {
                         if isRegister {
+                            // Profile Image Picker
+                            PhotosPicker(
+                                selection: $selectedItem,
+                                matching: .images,
+                                photoLibrary: .shared()
+                            ) {
+                                if let image = tempProfileImage {
+                                    image
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 80, height: 80)
+                                        .clipShape(Circle())
+                                } else if let loadedImage = userAuth.profileImage {
+                                    loadedImage
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 80, height: 80)
+                                        .clipShape(Circle())
+                                } else {
+                                    Circle()
+                                        .fill(Color.gray.opacity(0.3))
+                                        .frame(width: 80, height: 80)
+                                        .overlay(
+                                            Image(systemName: "photo.fill")
+                                                .font(.title)
+                                                .foregroundColor(.gray)
+                                        )
+                                }
+                            }
+                            .onChange(of: selectedItem) { newItem in
+                                Task {
+                                    if let data = try? await newItem?.loadTransferable(type: Data.self) {
+                                        profileImageData = data
+                                        if let uiImage = UIImage(data: data) {
+                                            tempProfileImage = Image(uiImage: uiImage)
+                                        }
+                                    }
+                                    selectedItem = nil
+                                }
+                            }
+
                             VStack(alignment: .leading, spacing: 4) {
                                 TextField(
                                     "Full name",
@@ -43,6 +85,8 @@ struct UserView: View {
                                 .textInputAutocapitalization(.words)
                                 Divider().background(Color.gray)
                             }
+                        } else {
+                            // No image displayed on the login screen
                         }
 
                         VStack(alignment: .leading, spacing: 4) {
@@ -72,21 +116,21 @@ struct UserView: View {
                     Button {
                         Task {
                             if isRegister {
-                                await userAuth.register()
-                                if userAuth.isRegister {
+                                await userAuth.register(imageData: profileImageData)
+                                if userAuth.registrationSuccess {
                                     withAnimation {
                                         isRegister = false
+                                        tempProfileImage = nil
+                                        profileImageData = nil
                                     }
                                 } else {
                                     showAlert = userAuth.falseCredential
                                 }
                             } else {
                                 await userAuth.login()
-                                if userAuth.user != nil {
-                                    print(
-                                        "✅ Login Success: \(userAuth.user?.uid ?? "")"
-                                    )
-                                } else {
+                                // The userAuth.isLogin property will be set to true inside userAuth.login()
+                                // The parent view observing userAuth.isLogin will handle navigation
+                                if userAuth.user == nil { // Only show alert if login failed
                                     showAlert = true
                                 }
                             }
@@ -121,11 +165,10 @@ struct UserView: View {
                     Spacer(minLength: 32)
                 }
             }
-            .alert("Login Failed", isPresented: $showAlert) {
+            .alert(userAuth.authErrorMessage, isPresented: $userAuth.falseCredential) {
                 Button("OK", role: .cancel) {}
-            } message: {
-                Text("Incorrect email or password.")
             }
+            // Removed .navigationDestination here, it moves to the root view
         }
     }
 }

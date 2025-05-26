@@ -1,27 +1,24 @@
-//
-//  UserViewModel.swift
-//  S4-MAD-ALP
-//
-//  Created by Gabriela Sihutomo on 22/05/25.
-//
-
 import Firebase
 import FirebaseAuth
 import FirebaseDatabase
 import Foundation
+import SwiftUI
 
 @MainActor
 class UserViewModel: ObservableObject {
     @Published var user: User?
     @Published var userModel: UserModel
     @Published var userId: String?
-    @Published var isLogin: Bool
+    @Published var isLogin: Bool // This will control the navigation
     @Published var isRegister: Bool
     @Published var falseCredential: Bool
     @Published var authErrorMessage: String = ""
-
+    @Published var registrationSuccess: Bool = false
+    @Published var profileImage: Image? // To hold the locally loaded image
 
     private let db = Database.database().reference()
+    private let defaults = UserDefaults.standard
+    private let profileImageKey = "userProfileImage_" // Append user ID for multiple users
 
     init() {
         self.user = nil
@@ -29,6 +26,7 @@ class UserViewModel: ObservableObject {
         self.isRegister = false
         self.falseCredential = false
         self.userModel = UserModel()
+        // No need to load image in init, will do it on login/fetch
     }
 
     func fetchUser(uid: String) async throws {
@@ -37,15 +35,19 @@ class UserViewModel: ObservableObject {
         if let value = snapshot.value as? [String: Any] {
             self.userModel.name = value["name"] as? String ?? ""
             self.userModel.email = value["email"] as? String ?? ""
+            // We won't fetch image URL anymore
 
-            print("✅ User profile loaded: \(self.userModel.name)")
+            // Load local profile image
+            loadLocalProfileImage(userId: uid)
+
+            print("✅ User profile loaded for user ID: \(uid), Name: \(self.userModel.name)")
 
         } else {
             print("⚠️ No user profile found for uid \(uid)")
         }
     }
 
-    func register() async {
+    func register(imageData: Data?) async {
         do {
             let result = try await Auth.auth()
                 .createUser(
@@ -54,24 +56,33 @@ class UserViewModel: ObservableObject {
                 )
 
             let uid = result.user.uid
-            let userData = [
+            let userData: [String: Any] = [
                 "name": userModel.name,
                 "email": userModel.email,
+                "image": "", // We won't store image path in DB for local storage
             ]
 
             try await db.child("users").child(uid).setValue(userData)
 
+            // Save image locally
+            if let imageData = imageData {
+                saveLocalProfileImage(userId: uid, imageData: imageData)
+            }
+
             DispatchQueue.main.async {
                 self.userModel.password = ""
-                self.authErrorMessage = "" // reset error
-                self.falseCredential = false // reset alert flag
-                self.isRegister = true // untuk kembali ke login view
+                self.authErrorMessage = ""
+                self.falseCredential = false
+                self.isRegister = true
+                self.registrationSuccess = true
+                self.profileImage = nil // Clear temporary image
             }
 
             print("✅ Account successfully created for user: \(userModel.email) with UID: \(uid)")
 
         } catch {
             DispatchQueue.main.async {
+                self.registrationSuccess = false
                 if let errorCode = AuthErrorCode(rawValue: (error as NSError).code) {
                     switch errorCode.code {
                     case .emailAlreadyInUse:
@@ -91,6 +102,27 @@ class UserViewModel: ObservableObject {
         }
     }
 
+    private func saveLocalProfileImage(userId: String, imageData: Data) {
+        let key = profileImageKey + userId
+        let base64String = imageData.base64EncodedString()
+        defaults.set(base64String, forKey: key)
+        print("✅ Profile image saved locally for user ID: \(userId), Base64 URL: \(base64String.prefix(20))...") // Show first 20 chars
+    }
+
+    private func loadLocalProfileImage(userId: String) {
+        let key = profileImageKey + userId
+        if let base64String = defaults.string(forKey: key),
+           let imageData = Data(base64Encoded: base64String),
+           let uiImage = UIImage(data: imageData) {
+            DispatchQueue.main.async {
+                self.profileImage = Image(uiImage: uiImage)
+                print("✅ Profile image loaded locally for user ID: \(userId), Base64 URL: \(base64String.prefix(20))...") // Show first 20 chars
+            }
+        } else {
+            print("⚠️ No local profile image found for user ID: \(userId)")
+        }
+    }
+
     func login() async {
         do {
             let result = try await Auth.auth().signIn(
@@ -98,14 +130,19 @@ class UserViewModel: ObservableObject {
                 password: userModel.password
             )
 
+            let uid = result.user.uid
+
             DispatchQueue.main.async {
                 self.falseCredential = false
-                self.authErrorMessage = "" // clear old error
+                self.authErrorMessage = ""
+                self.isLogin = true // Crucial: Set isLogin to true on successful login
+                // Load local profile image on login
+                self.loadLocalProfileImage(userId: uid)
             }
 
-            print("✅ SignIn Success: User ID = \(result.user.uid)")
+            print("✅ SignIn Success for user ID: \(uid), Email: \(userModel.email)")
 
-            try await fetchUser(uid: result.user.uid)
+            try await fetchUser(uid: uid) // This will also load the local image again
 
         } catch {
             DispatchQueue.main.async {
@@ -134,8 +171,10 @@ class UserViewModel: ObservableObject {
         do {
             try Auth.auth().signOut()
             self.user = nil
-            self.isLogin = false
+            self.isLogin = false // Crucial: Set isLogin to false on logout
             self.falseCredential = false
+            self.userModel = UserModel()
+            self.profileImage = nil // Clear displayed image on logout
 
             print("✅ SignOut Success: User cleared.")
 

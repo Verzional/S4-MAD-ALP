@@ -11,6 +11,7 @@ import SwiftUI
 
 @main
 struct S4_MAD_ALPApp: App {
+    @StateObject var userAuth = UserViewModel() // Create a single instance here
 
     init() {
         FirebaseApp.configure()
@@ -24,5 +25,6 @@ struct S4_MAD_ALPApp: App {
         WindowGroup {
             ContentView()
         }
+        .environmentObject(userAuth)
     }
 }

@@ -8,17 +8,18 @@
 import SwiftUI
 
 struct ContentView: View {
+    @EnvironmentObject var userAuth: UserViewModel // Access the UserViewModel
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        if userAuth.isLogin {
+            ProfileAccountView()
+        } else {
+            UserView()
         }
-        .padding()
     }
 }
 
 #Preview {
     ContentView()
+        .environmentObject(UserViewModel())
 }
