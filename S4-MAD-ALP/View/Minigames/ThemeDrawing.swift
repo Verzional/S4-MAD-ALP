@@ -1,7 +1,7 @@
 import SwiftUI
 import PencilKit
 
-struct DrawingView: View {
+struct ThemeDrawing: View {
     @EnvironmentObject var cvm : DrawingViewModel
     @EnvironmentObject var cmvm: ColorMixingViewModel
 
@@ -9,6 +9,9 @@ struct DrawingView: View {
             
         
             VStack(spacing: 20) {
+                Text("Fantasy")
+                    .font(.title)
+                    .fontWeight(.bold)
                 CanvasViewWrapper()
                     .environmentObject(cvm)
                     .background(Color.white)
@@ -22,18 +25,15 @@ struct DrawingView: View {
 
     }
 
-    func toolButton(icon: String, selected: Bool, disabled: Bool, action: @escaping () -> Void) -> some View {
+    func toolButton(icon: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: icon)
                 .font(.title2)
-                .foregroundColor(disabled ? .gray : (selected ? .white : .blue))
                 .frame(width: 44, height: 44)
-                .background(selected ? .blue : Color(.systemGray5))
+                .background(Color(.systemGray5))
                 .clipShape(Circle())
         }
-        .disabled(disabled)
     }
-
     
     private struct CanvasViewWrapper: UIViewControllerRepresentable {
         @EnvironmentObject var viewModel: DrawingViewModel
@@ -82,12 +82,14 @@ struct DrawingView: View {
     
     private var toolPickerSection: some View {
         HStack(spacing: 12) {
-                toolButton(icon: "pencil.tip", selected: cvm.currentTool == .pen, disabled: false, action: cvm.usePen)
-            toolButton(icon: "eraser", selected: cvm.currentTool == .softEraser, disabled: false, action: cvm.useSoftEraser)
-                toolButton(icon: "scissors", selected: cvm.currentTool == .strokeEraser, disabled: false,action: cvm.useStrokeEraser)
-            toolButton(icon: "pencil", selected: cvm.currentTool == .pencil, disabled: !cvm.pencilEnabled,action: cvm.usePencil).disabled(!cvm.pencilEnabled)
-            toolButton(icon: "paintbrush.pointed", selected: cvm.currentTool == .marker,disabled: !cvm.markerEnabled, action: cvm.useMarker).disabled(!cvm.markerEnabled)
-                toolButton(icon: "highlighter", selected: cvm.currentTool == .crayon,disabled: !cvm.crayonEnabled, action: cvm.useCrayon).disabled(!cvm.crayonEnabled)
+            toolButton(icon: "pencil.tip", action: cvm.usePen)
+            toolButton(icon: "eraser", action: cvm.useSoftEraser)
+            toolButton(icon: "scissors", action: cvm.useStrokeEraser)
+            toolButton(icon: "pencil", action: cvm.usePencil).disabled(!cvm.pencilEnabled)
+            toolButton(icon: "paintbrush.pointed", action: cvm.useMarker).disabled(!cvm.markerEnabled)
+            toolButton(icon: "highlighter", action: cvm.useCrayon).disabled(!cvm.crayonEnabled)
+            
+            
         }
         .padding(16)
         .background(sectionBackground)
@@ -222,15 +224,13 @@ struct DrawingView: View {
                     Text("Brush Size")
                 }
                 .tint(cvm.strokeColor)
-                .onChange(of: cvm.strokeWidth) { _ in
-                    cvm.updateToolColorOrWidth()
-                }
                 
                 maxSizeIndicator
             }
         }
         
         private var minSizeIndicator: some View {
+
             Circle()
                 .fill(Color.gray.opacity(0.4))
                 .frame(width: 4, height: 4)
@@ -253,7 +253,7 @@ struct DrawingView: View {
 }
 
 #Preview {
-    DrawingView()
+    ThemeDrawing()
         .environmentObject(DrawingViewModel())
         .environmentObject(ColorMixingViewModel())
 }
