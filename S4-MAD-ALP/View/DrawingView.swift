@@ -13,6 +13,7 @@ struct DrawingView: View {
                     .environmentObject(cvm)
                     .background(Color.white)
                     .frame(maxHeight: .infinity)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
                 toolPickerSection
                         colorPaletteSection
                         brushSizeSection
@@ -143,7 +144,7 @@ struct DrawingView: View {
         }
         
         private func colorCircle(for item: ColorItem) -> some View {
-            let color = Color(item.hex)
+            let color = Color(hex: item.hex)
             let isSelected = cvm.strokeColor == color
             
             return Circle()
@@ -156,6 +157,7 @@ struct DrawingView: View {
                 .onTapGesture {
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
                         cvm.strokeColor = color
+                        cvm.updateToolColorOrWidth()
                     }
                 }
                 .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isSelected)

@@ -5,7 +5,7 @@ class DrawingViewModel: ObservableObject {
     @Published var drawing = PKDrawing()
     @Published var strokeColor: Color = .black
     @Published var strokeWidth: CGFloat = 10
-    @Published var tool: PKTool = PKInkingTool(.pen, color: .red, width: 5)
+    @Published var tool: PKTool = PKInkingTool(.pen, color: .black, width: 5)
     @Published var pencilEnabled: Bool = false
     @Published var markerEnabled: Bool = false
     @Published var crayonEnabled: Bool = false
