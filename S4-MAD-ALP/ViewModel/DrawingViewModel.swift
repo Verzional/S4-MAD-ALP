@@ -58,4 +58,16 @@ class DrawingViewModel: ObservableObject {
     func clear() {
         drawing = PKDrawing()
     }
+    
+    func levelCheck(level: Int) {
+        if(level>=2){
+            pencilEnabled = true
+        }
+        if(level>=4){
+            markerEnabled = true
+        }
+        if(level>=6){
+            crayonEnabled = true
+        }
+    }
 }

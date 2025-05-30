@@ -4,6 +4,9 @@ import PencilKit
 struct DrawingView: View {
     @EnvironmentObject var cvm : DrawingViewModel
     @EnvironmentObject var cmvm: ColorMixingViewModel
+    @EnvironmentObject var userData: UserViewModel
+    
+    
 
     var body: some View {
             
@@ -14,14 +17,18 @@ struct DrawingView: View {
                     .background(Color.white)
                     .frame(maxHeight: .infinity)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
-                toolPickerSection
+                        toolPickerSection
                         colorPaletteSection
                         brushSizeSection
                     }
                     .padding(16)
                     .background(Color(.systemGroupedBackground))
+                    .onAppear{
+                        cvm.levelCheck(level: userData.userModel.level)
+                    }
 
     }
+    
 
     func toolButton(icon: String, selected: Bool, disabled: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
@@ -258,4 +265,5 @@ struct DrawingView: View {
     DrawingView()
         .environmentObject(DrawingViewModel())
         .environmentObject(ColorMixingViewModel())
+        .environmentObject(UserViewModel())
 }
