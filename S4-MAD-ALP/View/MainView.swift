@@ -13,7 +13,7 @@ struct MainView: View {
     
     var body: some View {
         TabView {
-            CanvasView().tabItem {
+            DrawingView().tabItem {
                 Label("Canvas", systemImage:"paintbrush.pointed.fill")
             }
             

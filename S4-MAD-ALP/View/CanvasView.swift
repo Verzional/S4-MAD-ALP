@@ -237,3 +237,9 @@ struct CanvasView: View {
             }
     }
 }
+
+#Preview {
+    CanvasView()
+        .environmentObject(CanvasViewModel())
+        .environmentObject(ColorMixingViewModel())
+}
