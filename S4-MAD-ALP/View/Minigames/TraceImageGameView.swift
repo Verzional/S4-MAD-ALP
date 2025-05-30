@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct TraceImageGameView: View {
+    @EnvironmentObject var cvm : DrawingViewModel
     @State private var currentStroke = Stroke()
     @State private var strokes: [Stroke] = []
     @State private var isImageVisible = true
@@ -51,28 +52,17 @@ struct TraceImageGameView: View {
             } else {
                 VStack {
                     DrawingView()
-                        .environmentObject(DrawingViewModel())
+                        .environmentObject(cvm)
                         .environmentObject(UserViewModel())
                         .environmentObject(ColorMixingViewModel())
 
                     Button("Finish") {
-                        if strokes.isEmpty {
+                        if cvm.drawing.bounds.isEmpty {
                             showingNoDrawingAlert = true // Show the alert if no drawing
                         } else {
-                            let renderer = ImageRenderer(content:
-                                Canvas { context, size in
-                                    for stroke in strokes {
-                                        var path = Path()
-                                        path.addLines(stroke.points)
-                                        context.stroke(path, with: .color(stroke.color), lineWidth: stroke.lineWidth)
-                                    }
-                                }
-                                .frame(width: canvasWidth, height: canvasHeight)
-                            )
-                            if let uiImage = renderer.uiImage {
-                                userDrawnImage = Image(uiImage: uiImage)
+                            userDrawnImage = Image(uiImage: cvm.drawing.image(from: cvm.drawing.bounds, scale: 1.0))
                                 showingComparison = true
-                            }
+                            
                         }
                     }
                     .padding()
@@ -89,6 +79,9 @@ struct TraceImageGameView: View {
             if showingComparison {
                 comparisonView
             }
+        }
+        .onAppear{
+            cvm.clear()
         }
     }
 
@@ -136,4 +129,5 @@ struct TraceImageGameView: View {
 
 #Preview {
     TraceImageGameView()
+        .environmentObject(DrawingViewModel())
 }

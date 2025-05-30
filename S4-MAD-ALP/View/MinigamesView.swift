@@ -16,7 +16,7 @@ struct MinigamesView: View {
             ]
 
             LazyVGrid(columns: columns, spacing: 20) {
-                NavigationLink(destination: MemorizingGameView()) {
+                NavigationLink(destination: TraceImageGameView()) {
                     VStack {
                         Image(systemName: "gamecontroller.fill")
                             .font(.title2)
@@ -30,11 +30,11 @@ struct MinigamesView: View {
                     .foregroundColor(.black)
                 }
                 .padding(.top, 20)
-                NavigationLink(destination: MemorizingGameView()) {
+                NavigationLink(destination: CrazyPrompts()) {
                     VStack {
                         Image(systemName: "gamecontroller.fill")
                             .font(.title2)
-                        Text("Memorize game")
+                        Text("Theme Drawing")
                             .font(.headline)
                     }
                     .padding(.vertical, 12)
@@ -44,20 +44,7 @@ struct MinigamesView: View {
                     .foregroundColor(.black)
                 }
                 .padding(.top, 20)
-                NavigationLink(destination: MemorizingGameView()) {
-                    VStack {
-                        Image(systemName: "gamecontroller.fill")
-                            .font(.title2)
-                        Text("Memorize game")
-                            .font(.headline)
-                    }
-                    .padding(.vertical, 12)
-                    .padding(.horizontal, 30)
-                    .background(Color.gray.opacity(0.15))
-                    .cornerRadius(15)
-                    .foregroundColor(.black)
-                }
-                .padding(.top, 20)
+
             }
     
                 
@@ -68,4 +55,9 @@ struct MinigamesView: View {
 
 #Preview {
     MinigamesView()
+        .environmentObject(DrawingViewModel())
+        .environmentObject(CanvasViewModel())
+        .environmentObject(UserViewModel())
+        .environmentObject(ColorMixingViewModel())
+        .environmentObject(ThemeDrawingViewModel())
 }
