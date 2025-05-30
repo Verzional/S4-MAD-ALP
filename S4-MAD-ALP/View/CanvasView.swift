@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Firebase
 
 struct CanvasView: View {
     @EnvironmentObject var cvm: CanvasViewModel
