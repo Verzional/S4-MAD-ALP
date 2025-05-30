@@ -37,4 +37,3 @@ class CanvasViewModel: ObservableObject {
         strokeWidth = width
     }
 }
-
