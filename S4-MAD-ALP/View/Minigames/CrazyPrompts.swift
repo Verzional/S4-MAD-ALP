@@ -25,6 +25,9 @@ struct CrazyPrompts: View {
         }
         .toolbar(.hidden, for: .tabBar)
         .toolbar(.hidden, for: .navigationBar)
+        .onAppear(){
+            cvm.clear()
+        }
 
 
     }

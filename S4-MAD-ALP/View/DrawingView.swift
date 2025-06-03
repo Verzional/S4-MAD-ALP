@@ -4,29 +4,45 @@ import PencilKit
 struct DrawingView: View {
     @EnvironmentObject var cvm : DrawingViewModel
     @EnvironmentObject var cmvm: ColorMixingViewModel
-    @EnvironmentObject var userData: UserViewModel
-    @State private var selectedTab: ToolTab = .tools // New state to manage selected tab
+    @EnvironmentObject var uvm: UserViewModel
+    @Environment(\.dismiss) var dismiss
+    
+    var existingProject: DrawingProject?
+    
+    @State var presentNameInputView: Bool = false
 
-        enum ToolTab: String, CaseIterable, Identifiable {
-            case tools = "Tools"
-            case colors = "Colors"
-            case size = "Size"
-
-            var id: String { self.rawValue }
-            var systemImage: String {
-                switch self {
-                case .tools: return "pencil.and.outline"
-                case .colors: return "paintpalette.fill"
-                case .size: return "paintbrush.pointed.fill"
-                }
-            }
-        }
     
 
     var body: some View {
-            
+        NavigationView{
             VStack(spacing: 20) {
-                // MARK: - Canvas View Wrapper
+                HStack{
+                    if(existingProject != nil){
+                        Button(action:{
+                            uvm.deleteProject(existingProject!)
+                        }){
+                            Image(systemName: "trash")
+                        }
+                    }
+                    Spacer()
+                    Button(
+                        action:{
+                            if(existingProject == nil){
+                                presentNameInputView = true
+                            }else{
+                                uvm.updateProjectDrawing(projectID: existingProject!.id, newDrawing: cvm.drawing)
+                                dismiss()
+                                
+                            }
+                        }
+                    ){
+                        Image(systemName: "square.and.arrow.down")
+                            .font(.title2)
+                            .foregroundColor(.blue)
+                            .frame(width: 30, height: 30)
+                    }
+                }
+                
                            CanvasViewWrapper()
                                .environmentObject(cvm)
                                .background(Color.white)
@@ -35,44 +51,51 @@ struct DrawingView: View {
 
                            // MARK: - Custom Tab Buttons
                            HStack {
-                               ForEach(ToolTab.allCases) { tab in
+                               ForEach(DrawingViewModel.ToolTab.allCases) { tab in
                                    Button(action: {
                                        withAnimation {
-                                           selectedTab = tab
+                                           cvm.selectedTab = tab
                                        }
                                    }) {
                                        Label(tab.rawValue, systemImage: tab.systemImage)
                                            .font(.headline)
                                            .padding(.vertical, 8)
                                            .padding(.horizontal, 15)
-                                           .background(selectedTab == tab ? Color.accentColor : Color(.systemGray5))
-                                           .foregroundColor(selectedTab == tab ? .white : .primary)
+                                           .background(cvm.selectedTab == tab ? Color.accentColor : Color(.systemGray5))
+                                           .foregroundColor(cvm.selectedTab == tab ? .white : .primary)
                                            .cornerRadius(10)
                                    }
                                }
                            }
-                           .padding(.horizontal, 16) // Padding for the button row
-
+                           .padding(.horizontal, 16)
                            // MARK: - Conditionally Displayed Tool Sections
-                           Group { // Use Group to conditionally show views
-                               if selectedTab == .tools {
+                           Group {
+                               if cvm.selectedTab == .tools {
                                    toolPickerSection
-                               } else if selectedTab == .colors {
+                               } else if cvm.selectedTab == .colors {
                                    colorPaletteSection
-                               } else if selectedTab == .size {
+                               } else if cvm.selectedTab == .size {
                                    brushSizeSection
                                }
                            }
-                           // Optional: Give the content area a fixed height if you want it to scroll
-                           // independently or maintain a consistent layout.
-                            .frame(height: 100) // Adjust height as needed for your sections
+
+                            .frame(height: 100)
 
                        }
-                       .padding(16) // Padding for the content inside the VStack
-                       .background(Color(.systemGroupedBackground)) // Background for the entire view
+                       .padding(16)
+                       .background(Color(.systemGroupedBackground))
                        .onAppear{
-                           cvm.levelCheck(level: userData.userModel.level)
+                           cvm.levelCheck(level: uvm.userModel.level)
+                           if(existingProject != nil){
+                               cvm.drawing = existingProject?.drawing ?? PKDrawing()
+                           }
                        }
+                       .sheet(isPresented: $presentNameInputView){
+                           ProjectNameInput(uvm: uvm,  drawingToSave: cvm.drawing)
+                       }
+                        
+        }
+
     
 
     }

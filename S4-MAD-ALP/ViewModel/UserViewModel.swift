@@ -3,6 +3,7 @@ import FirebaseAuth
 import FirebaseDatabase
 import Foundation
 import SwiftUI
+import PencilKit
 
 @MainActor
 class UserViewModel: ObservableObject {
@@ -15,6 +16,7 @@ class UserViewModel: ObservableObject {
     @Published var authErrorMessage: String = ""
     @Published var registrationSuccess: Bool = false
     @Published var profileImage: Image?
+    @Published var projects: [DrawingProject] = []
 
     private let db = Database.database().reference()
     private let defaults = UserDefaults.standard
@@ -184,6 +186,78 @@ class UserViewModel: ObservableObject {
         if(self.userModel.currXP >= self.userModel.maxXP){
             self.userModel.level += 1
             self.userModel.currXP -= self.userModel.maxXP
+            self.userModel.maxXP = Int(Double(self.userModel.maxXP) * 1.1)
         }
     }
+    
+    
+    func addProject(name: String? = nil, drawing: PKDrawing) {
+            let newProjectInMemory = DrawingProject(name: name, drawing: drawing)
+            let success = LocalDrawingStorage.shared.saveDrawingData(newProjectInMemory.drawing, filename: newProjectInMemory.drawingDataFilename)
+
+            if success {
+                projects.append(newProjectInMemory)
+                saveMetadataIndex()
+                print("Project added and saved locally. Total projects: \(projects.count)")
+            } else {
+                print("Failed to save drawing data to disk for new project.")
+            }
+        }
+        
+        func deleteProject(_ projectToDelete: DrawingProject) {
+            LocalDrawingStorage.shared.deleteDrawingData(filename: projectToDelete.drawingDataFilename)
+            projects.removeAll { $0.id == projectToDelete.id }
+            saveMetadataIndex()
+            print("Project deleted. Remaining projects: \(projects.count)")
+        }
+
+        private func saveMetadataIndex() {
+            let metadataArray = projects.map {
+                DrawingProjectMetadata(id: $0.id,
+                                       name: $0.name,
+                                       creationDate: $0.creationDate,
+                                       lastModifiedDate: $0.lastModifiedDate,
+                                       drawingDataFilename: $0.drawingDataFilename)
+            }
+            LocalDrawingStorage.shared.saveProjectsMetadata(metadataArray)
+        }
+
+        func loadProjectsFromDisk() {
+            let metadataArray = LocalDrawingStorage.shared.loadProjectsMetadata()
+            var loadedProjects: [DrawingProject] = []
+
+            for metadata in metadataArray {
+                if let drawing = LocalDrawingStorage.shared.loadDrawingData(filename: metadata.drawingDataFilename) {
+                    let project = DrawingProject(id: metadata.id,
+                                                 name: metadata.name,
+                                                 drawing: drawing,
+                                                 creationDate: metadata.creationDate,
+                                                 lastModifiedDate: metadata.lastModifiedDate,
+                                                 drawingDataFilename: metadata.drawingDataFilename)
+                    loadedProjects.append(project)
+                } else {
+                    print("Could not load drawing data for project ID: \(metadata.id)")
+                }
+            }
+            self.projects = loadedProjects
+            print("Loaded \(projects.count) projects from disk.")
+        }
+        
+        func updateProjectDrawing(projectID: UUID, newDrawing: PKDrawing) {
+            guard let index = projects.firstIndex(where: { $0.id == projectID }) else {
+                print("Project with ID \(projectID) not found for update.")
+                return
+            }
+            projects[index].drawing = newDrawing
+            projects[index].lastModifiedDate = Date()
+            
+            let success = LocalDrawingStorage.shared.saveDrawingData(newDrawing, filename: projects[index].drawingDataFilename)
+            
+            if success {
+                saveMetadataIndex()
+                print("Project \(projectID) drawing updated and saved.")
+            } else {
+                print("Failed to save updated drawing data for project \(projectID).")
+            }
+        }
 }
