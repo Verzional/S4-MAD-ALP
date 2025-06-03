@@ -62,6 +62,19 @@ struct ProfileAccountView: View {
                     .fontWeight(.bold)
                     .foregroundColor(.black)
                     .padding(.top, 10)
+                    
+                    VStack{
+                        Text("Level \(userAuth.userModel.level)")
+                        ProgressView(
+                            value: (
+                                Double(userAuth.userModel.currXP)/Double(userAuth.userModel.maxXP)
+                            )
+                        
+                        )
+                           
+
+                    }
+                    .padding(.horizontal)
 
                     // "My Project" Button
                     Button(action: {
@@ -81,20 +94,7 @@ struct ProfileAccountView: View {
                         .foregroundColor(.black)
 
                         // "Memorize game" Button
-                        NavigationLink(destination: MemorizingGameView()) {
-                            HStack {
-                                Image(systemName: "gamecontroller.fill")
-                                    .font(.title2)
-                                Text("Memorize game")
-                                    .font(.headline)
-                            }
-                            .padding(.vertical, 12)
-                            .padding(.horizontal, 30)
-                            .background(Color.gray.opacity(0.15))
-                            .cornerRadius(15)
-                            .foregroundColor(.black)
-                        }
-                        .padding(.top, 20)
+                        
                     }
                     .padding(.horizontal, 24)
 
@@ -120,6 +120,8 @@ struct ProfileAccountView: View {
         }
     }
 }
+
+
 
 #Preview {
     ProfileAccountView()

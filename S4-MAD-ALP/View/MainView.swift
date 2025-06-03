@@ -13,12 +13,20 @@ struct MainView: View {
     
     var body: some View {
         TabView {
-            DrawingView().tabItem {
+            MinigamesView().tabItem{
+                Label("Minigames", systemImage: "gamecontroller.fill")
+            }
+            
+            CanvasView().tabItem {
                 Label("Canvas", systemImage:"paintbrush.pointed.fill")
             }
             
             ColorMixingView().tabItem {
                 Label("Mixing", systemImage: "paintpalette.fill")
+            }
+            
+            ProfileAccountView().tabItem{
+                Label("Profile", systemImage: "person.fill")
             }
         }
     }

@@ -14,6 +14,7 @@ struct S4_MAD_ALPApp: App {
     @StateObject private var cvm = DrawingViewModel()
     @StateObject private var cmvm = ColorMixingViewModel()
     @StateObject var userAuth = UserViewModel()
+    @StateObject private var themeDrawing = ThemeDrawingViewModel()
 
     init() {
         FirebaseApp.configure()
@@ -28,6 +29,7 @@ struct S4_MAD_ALPApp: App {
             MainView()
                 .environmentObject(cvm)
                 .environmentObject(cmvm)
+                .environmentObject(themeDrawing)
         }
         .environmentObject(userAuth)
     }

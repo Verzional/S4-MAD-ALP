@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct TraceImageGameView: View {
+    @EnvironmentObject var cvm : DrawingViewModel
     @State private var currentStroke = Stroke()
     @State private var strokes: [Stroke] = []
     @State private var isImageVisible = true
@@ -50,78 +51,18 @@ struct TraceImageGameView: View {
                 }
             } else {
                 VStack {
-                    Text("Draw")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .padding(.bottom, 20)
-
-                    Canvas { context, size in
-                        for stroke in strokes {
-                            var path = Path()
-                            path.addLines(stroke.points)
-                            context.stroke(path, with: .color(stroke.color), lineWidth: stroke.lineWidth)
-                        }
-                        var path = Path()
-                        path.addLines(currentStroke.points)
-                        context.stroke(path, with: .color(currentStroke.color), lineWidth: currentStroke.lineWidth)
-                    }
-                    .frame(width: canvasWidth, height: canvasHeight)
-                    .border(Color.black, width: 1)
-                    .gesture(
-                        DragGesture(minimumDistance: 0, coordinateSpace: .local)
-                            .onChanged({ value in
-                                let newPoint = value.location
-                                currentStroke.points.append(newPoint)
-                                currentStroke.color = selectedColor
-                            })
-                            .onEnded({ _ in
-                                strokes.append(currentStroke)
-                                currentStroke = Stroke(color: selectedColor)
-                            })
-                    )
-
-                    HStack {
-                        ScrollView(.horizontal) {
-                            HStack {
-                                ForEach(availableColors, id: \.self) { color in
-                                    Circle()
-                                        .fill(color)
-                                        .frame(width: 30, height: 30)
-                                        .overlay(
-                                            Circle()
-                                                .strokeBorder(Color.gray, lineWidth: selectedColor == color ? 2 : 0)
-                                        )
-                                        .onTapGesture {
-                                            selectedColor = color
-                                        }
-                                }
-                            }
-                        }
-
-                        ColorPicker("", selection: $selectedColor)
-                            .frame(width: 50, height: 30)
-                    }
-                    .padding(.horizontal)
-                    .padding(.bottom)
+                    DrawingView()
+                        .environmentObject(cvm)
+                        .environmentObject(UserViewModel())
+                        .environmentObject(ColorMixingViewModel())
 
                     Button("Finish") {
-                        if strokes.isEmpty {
+                        if cvm.drawing.bounds.isEmpty {
                             showingNoDrawingAlert = true // Show the alert if no drawing
                         } else {
-                            let renderer = ImageRenderer(content:
-                                Canvas { context, size in
-                                    for stroke in strokes {
-                                        var path = Path()
-                                        path.addLines(stroke.points)
-                                        context.stroke(path, with: .color(stroke.color), lineWidth: stroke.lineWidth)
-                                    }
-                                }
-                                .frame(width: canvasWidth, height: canvasHeight)
-                            )
-                            if let uiImage = renderer.uiImage {
-                                userDrawnImage = Image(uiImage: uiImage)
+                            userDrawnImage = Image(uiImage: cvm.drawing.image(from: cvm.drawing.bounds, scale: 1.0))
                                 showingComparison = true
-                            }
+                            
                         }
                     }
                     .padding()
@@ -138,6 +79,9 @@ struct TraceImageGameView: View {
             if showingComparison {
                 comparisonView
             }
+        }
+        .onAppear{
+            cvm.clear()
         }
     }
 
@@ -185,4 +129,5 @@ struct TraceImageGameView: View {
 
 #Preview {
     TraceImageGameView()
+        .environmentObject(DrawingViewModel())
 }

@@ -9,16 +9,16 @@ class UserViewModel: ObservableObject {
     @Published var user: User?
     @Published var userModel: UserModel
     @Published var userId: String?
-    @Published var isLogin: Bool // This will control the navigation
+    @Published var isLogin: Bool
     @Published var isRegister: Bool
     @Published var falseCredential: Bool
     @Published var authErrorMessage: String = ""
     @Published var registrationSuccess: Bool = false
-    @Published var profileImage: Image? // To hold the locally loaded image
+    @Published var profileImage: Image?
 
     private let db = Database.database().reference()
     private let defaults = UserDefaults.standard
-    private let profileImageKey = "userProfileImage_" // Append user ID for multiple users
+    private let profileImageKey = "userProfileImage_"
 
     init() {
         self.user = nil
@@ -26,7 +26,6 @@ class UserViewModel: ObservableObject {
         self.isRegister = false
         self.falseCredential = false
         self.userModel = UserModel()
-        // No need to load image in init, will do it on login/fetch
     }
 
     func fetchUser(uid: String) async throws {
@@ -35,9 +34,6 @@ class UserViewModel: ObservableObject {
         if let value = snapshot.value as? [String: Any] {
             self.userModel.name = value["name"] as? String ?? ""
             self.userModel.email = value["email"] as? String ?? ""
-            // We won't fetch image URL anymore
-
-            // Load local profile image
             loadLocalProfileImage(userId: uid)
 
             print("✅ User profile loaded for user ID: \(uid), Name: \(self.userModel.name)")
@@ -135,14 +131,13 @@ class UserViewModel: ObservableObject {
             DispatchQueue.main.async {
                 self.falseCredential = false
                 self.authErrorMessage = ""
-                self.isLogin = true // Crucial: Set isLogin to true on successful login
-                // Load local profile image on login
+                self.isLogin = true
                 self.loadLocalProfileImage(userId: uid)
             }
 
             print("✅ SignIn Success for user ID: \(uid), Email: \(userModel.email)")
 
-            try await fetchUser(uid: uid) // This will also load the local image again
+            try await fetchUser(uid: uid)
 
         } catch {
             DispatchQueue.main.async {
@@ -181,6 +176,14 @@ class UserViewModel: ObservableObject {
         } catch {
             self.falseCredential = true
             print("❌ SignOut Error: \(error.localizedDescription)")
+        }
+    }
+    
+    func gainXP(xp: Int) {
+        self.userModel.currXP += xp
+        if(self.userModel.currXP >= self.userModel.maxXP){
+            self.userModel.level += 1
+            self.userModel.currXP -= self.userModel.maxXP
         }
     }
 }
