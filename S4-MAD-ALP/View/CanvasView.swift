@@ -23,9 +23,7 @@ struct CanvasView: View {
             .environmentObject(cvm)
             .environmentObject(cmvm)
             .environmentObject(userData)
-        
     }
-    
 }
 
 #Preview {

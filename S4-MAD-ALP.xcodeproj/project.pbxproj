@@ -15,6 +15,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		3FA035592DEED45A007D4A6C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3FDD96A02DDEBD3A005D2E16 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3FA035472DEED458007D4A6C;
+			remoteInfo = "MAD-Mac";
+		};
+		3FA035632DEED45A007D4A6C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3FDD96A02DDEBD3A005D2E16 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3FA035472DEED458007D4A6C;
+			remoteInfo = "MAD-Mac";
+		};
 		3FDD96B92DDEBD3B005D2E16 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3FDD96A02DDEBD3A005D2E16 /* Project object */;
@@ -32,12 +46,30 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3FA035482DEED458007D4A6C /* MAD-Mac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MAD-Mac.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3FA035582DEED45A007D4A6C /* MAD-MacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "MAD-MacTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3FA035622DEED45A007D4A6C /* MAD-MacUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "MAD-MacUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3FDD96A82DDEBD3A005D2E16 /* S4-MAD-ALP.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "S4-MAD-ALP.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3FDD96B82DDEBD3B005D2E16 /* S4-MAD-ALPTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "S4-MAD-ALPTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3FDD96C22DDEBD3B005D2E16 /* S4-MAD-ALPUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "S4-MAD-ALPUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		3FA035492DEED458007D4A6C /* MAD-Mac */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "MAD-Mac";
+			sourceTree = "<group>";
+		};
+		3FA0355B2DEED45A007D4A6C /* MAD-MacTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "MAD-MacTests";
+			sourceTree = "<group>";
+		};
+		3FA035652DEED45A007D4A6C /* MAD-MacUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "MAD-MacUITests";
+			sourceTree = "<group>";
+		};
 		3FDD96AA2DDEBD3A005D2E16 /* S4-MAD-ALP */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "S4-MAD-ALP";
@@ -56,6 +88,27 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		3FA035452DEED458007D4A6C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3FA035552DEED45A007D4A6C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3FA0355F2DEED45A007D4A6C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3FDD96A52DDEBD3A005D2E16 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -91,6 +144,9 @@
 				3FDD96AA2DDEBD3A005D2E16 /* S4-MAD-ALP */,
 				3FDD96BB2DDEBD3B005D2E16 /* S4-MAD-ALPTests */,
 				3FDD96C52DDEBD3B005D2E16 /* S4-MAD-ALPUITests */,
+				3FA035492DEED458007D4A6C /* MAD-Mac */,
+				3FA0355B2DEED45A007D4A6C /* MAD-MacTests */,
+				3FA035652DEED45A007D4A6C /* MAD-MacUITests */,
 				3FDD96A92DDEBD3A005D2E16 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -101,6 +157,9 @@
 				3FDD96A82DDEBD3A005D2E16 /* S4-MAD-ALP.app */,
 				3FDD96B82DDEBD3B005D2E16 /* S4-MAD-ALPTests.xctest */,
 				3FDD96C22DDEBD3B005D2E16 /* S4-MAD-ALPUITests.xctest */,
+				3FA035482DEED458007D4A6C /* MAD-Mac.app */,
+				3FA035582DEED45A007D4A6C /* MAD-MacTests.xctest */,
+				3FA035622DEED45A007D4A6C /* MAD-MacUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -108,6 +167,74 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		3FA035472DEED458007D4A6C /* MAD-Mac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3FA0356A2DEED45A007D4A6C /* Build configuration list for PBXNativeTarget "MAD-Mac" */;
+			buildPhases = (
+				3FA035442DEED458007D4A6C /* Sources */,
+				3FA035452DEED458007D4A6C /* Frameworks */,
+				3FA035462DEED458007D4A6C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				3FA035492DEED458007D4A6C /* MAD-Mac */,
+			);
+			name = "MAD-Mac";
+			packageProductDependencies = (
+			);
+			productName = "MAD-Mac";
+			productReference = 3FA035482DEED458007D4A6C /* MAD-Mac.app */;
+			productType = "com.apple.product-type.application";
+		};
+		3FA035572DEED45A007D4A6C /* MAD-MacTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3FA0356D2DEED45A007D4A6C /* Build configuration list for PBXNativeTarget "MAD-MacTests" */;
+			buildPhases = (
+				3FA035542DEED45A007D4A6C /* Sources */,
+				3FA035552DEED45A007D4A6C /* Frameworks */,
+				3FA035562DEED45A007D4A6C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3FA0355A2DEED45A007D4A6C /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				3FA0355B2DEED45A007D4A6C /* MAD-MacTests */,
+			);
+			name = "MAD-MacTests";
+			packageProductDependencies = (
+			);
+			productName = "MAD-MacTests";
+			productReference = 3FA035582DEED45A007D4A6C /* MAD-MacTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		3FA035612DEED45A007D4A6C /* MAD-MacUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3FA035702DEED45A007D4A6C /* Build configuration list for PBXNativeTarget "MAD-MacUITests" */;
+			buildPhases = (
+				3FA0355E2DEED45A007D4A6C /* Sources */,
+				3FA0355F2DEED45A007D4A6C /* Frameworks */,
+				3FA035602DEED45A007D4A6C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3FA035642DEED45A007D4A6C /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				3FA035652DEED45A007D4A6C /* MAD-MacUITests */,
+			);
+			name = "MAD-MacUITests";
+			packageProductDependencies = (
+			);
+			productName = "MAD-MacUITests";
+			productReference = 3FA035622DEED45A007D4A6C /* MAD-MacUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		3FDD96A72DDEBD3A005D2E16 /* S4-MAD-ALP */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3FDD96CC2DDEBD3B005D2E16 /* Build configuration list for PBXNativeTarget "S4-MAD-ALP" */;
@@ -191,6 +318,17 @@
 				LastSwiftUpdateCheck = 1620;
 				LastUpgradeCheck = 1620;
 				TargetAttributes = {
+					3FA035472DEED458007D4A6C = {
+						CreatedOnToolsVersion = 16.2;
+					};
+					3FA035572DEED45A007D4A6C = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = 3FA035472DEED458007D4A6C;
+					};
+					3FA035612DEED45A007D4A6C = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = 3FA035472DEED458007D4A6C;
+					};
 					3FDD96A72DDEBD3A005D2E16 = {
 						CreatedOnToolsVersion = 16.2;
 					};
@@ -224,11 +362,35 @@
 				3FDD96A72DDEBD3A005D2E16 /* S4-MAD-ALP */,
 				3FDD96B72DDEBD3B005D2E16 /* S4-MAD-ALPTests */,
 				3FDD96C12DDEBD3B005D2E16 /* S4-MAD-ALPUITests */,
+				3FA035472DEED458007D4A6C /* MAD-Mac */,
+				3FA035572DEED45A007D4A6C /* MAD-MacTests */,
+				3FA035612DEED45A007D4A6C /* MAD-MacUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		3FA035462DEED458007D4A6C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3FA035562DEED45A007D4A6C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3FA035602DEED45A007D4A6C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3FDD96A62DDEBD3A005D2E16 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -253,6 +415,27 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		3FA035442DEED458007D4A6C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3FA035542DEED45A007D4A6C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3FA0355E2DEED45A007D4A6C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3FDD96A42DDEBD3A005D2E16 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -277,6 +460,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		3FA0355A2DEED45A007D4A6C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3FA035472DEED458007D4A6C /* MAD-Mac */;
+			targetProxy = 3FA035592DEED45A007D4A6C /* PBXContainerItemProxy */;
+		};
+		3FA035642DEED45A007D4A6C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3FA035472DEED458007D4A6C /* MAD-Mac */;
+			targetProxy = 3FA035632DEED45A007D4A6C /* PBXContainerItemProxy */;
+		};
 		3FDD96BA2DDEBD3B005D2E16 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 3FDD96A72DDEBD3A005D2E16 /* S4-MAD-ALP */;
@@ -290,6 +483,130 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		3FA0356B2DEED45A007D4A6C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "MAD-Mac/MAD_Mac.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"MAD-Mac/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Verz.MAD-Mac";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		3FA0356C2DEED45A007D4A6C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "MAD-Mac/MAD_Mac.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"MAD-Mac/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Verz.MAD-Mac";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		3FA0356E2DEED45A007D4A6C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Verz.MAD-MacTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MAD-Mac.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MAD-Mac";
+			};
+			name = Debug;
+		};
+		3FA0356F2DEED45A007D4A6C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Verz.MAD-MacTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MAD-Mac.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MAD-Mac";
+			};
+			name = Release;
+		};
+		3FA035712DEED45A007D4A6C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Verz.MAD-MacUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = "MAD-Mac";
+			};
+			name = Debug;
+		};
+		3FA035722DEED45A007D4A6C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Verz.MAD-MacUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = "MAD-Mac";
+			};
+			name = Release;
+		};
 		3FDD96CA2DDEBD3B005D2E16 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -536,6 +853,33 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		3FA0356A2DEED45A007D4A6C /* Build configuration list for PBXNativeTarget "MAD-Mac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3FA0356B2DEED45A007D4A6C /* Debug */,
+				3FA0356C2DEED45A007D4A6C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3FA0356D2DEED45A007D4A6C /* Build configuration list for PBXNativeTarget "MAD-MacTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3FA0356E2DEED45A007D4A6C /* Debug */,
+				3FA0356F2DEED45A007D4A6C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3FA035702DEED45A007D4A6C /* Build configuration list for PBXNativeTarget "MAD-MacUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3FA035712DEED45A007D4A6C /* Debug */,
+				3FA035722DEED45A007D4A6C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		3FDD96A32DDEBD3A005D2E16 /* Build configuration list for PBXProject "S4-MAD-ALP" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
