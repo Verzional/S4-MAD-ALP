@@ -17,7 +17,7 @@ struct MainView: View {
                 Label("Minigames", systemImage: "gamecontroller.fill")
             }
             
-            CanvasView().tabItem {
+            ProjectsView().tabItem {
                 Label("Canvas", systemImage:"paintbrush.pointed.fill")
             }
             

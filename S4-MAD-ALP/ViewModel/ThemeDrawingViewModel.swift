@@ -15,7 +15,7 @@ class ThemeDrawingViewModel: ObservableObject {
     // Initialize with a default theme, and set an initial prompt
     init(theme: String = "Crazy Prompt Game") { // Changed default theme name
         generateCrazyPrompt()
-        }
+    }
 
     // MARK: - Prompt Generation Function
     func generateCrazyPrompt() {

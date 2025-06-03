@@ -19,10 +19,13 @@ struct CanvasView: View {
         @State private var saveAlertMessage = ""
     
     var body: some View {
-        DrawingView()
-            .environmentObject(cvm)
-            .environmentObject(cmvm)
-            .environmentObject(userData)
+        VStack{
+            DrawingView()
+                .environmentObject(cvm)
+                .environmentObject(cmvm)
+                .environmentObject(userData)
+        }
+
         
     }
     
