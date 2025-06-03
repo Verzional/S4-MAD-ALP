@@ -8,12 +8,10 @@
 import SwiftUI
 
 struct ProjectCardView: View {
-    let project: DrawingProject // Assuming DrawingProject has an 'image' or 'drawing' property
+    let project: DrawingProject
 
       var body: some View {
           VStack(alignment: .leading) {
-              // Attempt to generate and display the thumbnail
-              // The generateThumbnail() method should be on your DrawingProject model
               if let thumbnail = project.generateThumbnail(size: CGSize(width: 150, height: 120), scale: UIScreen.main.scale) {
                   Image(uiImage: thumbnail)
                       .resizable()

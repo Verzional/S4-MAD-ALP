@@ -12,14 +12,12 @@ class ThemeDrawingViewModel: ObservableObject {
         private let prepositions = ["on", "under", "in", "near", "behind", "through", "with", "around"]
         private let settings = ["the moon", "a magical forest", "a bustling city", "an underwater cave", "a desert island", "a cloud kingdom", "a forgotten attic", "a giant teacup"]
 
-    // Initialize with a default theme, and set an initial prompt
-    init(theme: String = "Crazy Prompt Game") { // Changed default theme name
+    init(theme: String = "Crazy Prompt Game") {
         generateCrazyPrompt()
     }
 
     // MARK: - Prompt Generation Function
     func generateCrazyPrompt() {
-        // Mix and match words from the arrays to create a prompt
                 guard let randomAdjective = adjectives.randomElement(),
                       let randomNoun = nouns.randomElement(),
                       let randomVerb = verbs.randomElement(),

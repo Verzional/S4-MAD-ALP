@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ProfileAccountView: View {
-    @EnvironmentObject var userAuth: UserViewModel  // Access the UserViewModel
+    @EnvironmentObject var userAuth: UserViewModel
 
     var body: some View {
         NavigationStack {
@@ -10,20 +10,16 @@ struct ProfileAccountView: View {
                     LinearGradient(
                         gradient: Gradient(colors: [Color(hex: "A7328C"), Color(hex: "f03e3e"), Color(hex: "F9B351")]),
                         startPoint: .bottomLeading,
-                        endPoint: .topTrailing // G
+                        endPoint: .topTrailing
                                     )
                 ).frame(width: UIScreen.main.bounds.width * 1.75, height: 450)
                     .offset(y: -280)
                 VStack {
-                    // Spacer for top alignment
+
                     Spacer()
                         .frame(height: 40)
-                    
-                    // Profile Header Section
-                    VStack(spacing: 20) {
-                        // User Profile Image with Half-Moon Background
+                                    VStack(spacing: 20) {
                         ZStack(alignment: .bottom) {
-                            // Half-Moon Background
                             GeometryReader { geometry in
                                 Circle()
                                     .fill(Color.gray.opacity(0.1))
@@ -33,9 +29,8 @@ struct ProfileAccountView: View {
                                     )
                                     .offset(y: geometry.size.height * 0.4)
                             }
-                            .frame(width: 160, height: 160)  // Adjust size as needed
+                            .frame(width: 160, height: 160)
                             
-                            // User Profile Image
                             if let profileImage = userAuth.profileImage {
                                 profileImage
                                     .resizable()

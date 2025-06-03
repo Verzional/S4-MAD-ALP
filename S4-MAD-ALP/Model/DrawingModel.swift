@@ -3,11 +3,13 @@ import PencilKit
 
 struct DrawingProject: Identifiable, Codable {
     let id: UUID
+    
     var name: String?
-    var drawing: PKDrawing // This will be loaded from a file
+    var drawing: PKDrawing
     let creationDate: Date
     var lastModifiedDate: Date
-    var drawingDataFilename: String // Name of the file storing the PKDrawing data
+    var drawingDataFilename: String
+    var userId: String?
 
     init(id: UUID, name: String?, drawing: PKDrawing, creationDate: Date, lastModifiedDate: Date, drawingDataFilename: String) {
         self.id = id
@@ -18,20 +20,21 @@ struct DrawingProject: Identifiable, Codable {
         self.drawingDataFilename = drawingDataFilename
     }
 
-    init(name: String? = nil, drawing: PKDrawing) {
+    init(name: String? = nil, drawing: PKDrawing, userId: String) {
         self.id = UUID()
         self.name = name
         self.drawing = drawing
         self.creationDate = Date()
         self.lastModifiedDate = Date()
         self.drawingDataFilename = "\(self.id.uuidString).pkdrawingdata"
+        self.userId = userId
     }
     
     func generateThumbnail(size: CGSize = CGSize(width: 100, height: 100), scale: CGFloat = 1.0) -> UIImage? {
             guard !drawing.bounds.isEmpty else {
                 UIGraphicsBeginImageContextWithOptions(size, false, scale)
                 defer { UIGraphicsEndImageContext() }
-                UIColor.systemGray5.setFill()
+                UIColor.white.setFill()
                 UIRectFill(CGRect(origin: .zero, size: size))
                 return UIGraphicsGetImageFromCurrentImageContext()
             }
@@ -42,7 +45,7 @@ struct DrawingProject: Identifiable, Codable {
 
             let aspectWidth = size.width / drawingRect.width
             let aspectHeight = size.height / drawingRect.height
-            let aspectRatio = min(aspectWidth, aspectHeight) // Use min to fit, max to fill (then clip)
+            let aspectRatio = min(aspectWidth, aspectHeight)
 
             let scaledDrawingSize = CGSize(width: drawingRect.width * aspectRatio, height: drawingRect.height * aspectRatio)
             let centeredRect = CGRect(
@@ -56,8 +59,8 @@ struct DrawingProject: Identifiable, Codable {
             defer { UIGraphicsEndImageContext() }
             
 
-            let imageFromDrawing = drawing.image(from: drawing.bounds, scale: scale) // Get image at native scale
-            imageFromDrawing.draw(in: centeredRect) // Draw it scaled and centered into the thumbnail context
+            let imageFromDrawing = drawing.image(from: drawing.bounds, scale: scale)
+            imageFromDrawing.draw(in: centeredRect)
 
             return UIGraphicsGetImageFromCurrentImageContext()
         }

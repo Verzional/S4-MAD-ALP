@@ -57,12 +57,12 @@ class UserViewModel: ObservableObject {
             let userData: [String: Any] = [
                 "name": userModel.name,
                 "email": userModel.email,
-                "image": "", // We won't store image path in DB for local storage
+                "image": "",
             ]
 
             try await db.child("users").child(uid).setValue(userData)
 
-            // Save image locally
+
             if let imageData = imageData {
                 saveLocalProfileImage(userId: uid, imageData: imageData)
             }
@@ -73,7 +73,7 @@ class UserViewModel: ObservableObject {
                 self.falseCredential = false
                 self.isRegister = true
                 self.registrationSuccess = true
-                self.profileImage = nil // Clear temporary image
+                self.profileImage = nil
             }
 
             print("✅ Account successfully created for user: \(userModel.email) with UID: \(uid)")
@@ -192,7 +192,7 @@ class UserViewModel: ObservableObject {
     
     
     func addProject(name: String? = nil, drawing: PKDrawing) {
-            let newProjectInMemory = DrawingProject(name: name, drawing: drawing)
+        let newProjectInMemory = DrawingProject(name: name, drawing: drawing, userId: userId!)
             let success = LocalDrawingStorage.shared.saveDrawingData(newProjectInMemory.drawing, filename: newProjectInMemory.drawingDataFilename)
 
             if success {

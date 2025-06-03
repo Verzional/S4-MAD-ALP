@@ -28,6 +28,25 @@ struct DrawingView: View {
             
             HStack(spacing: 15) {
                 HStack(spacing:5){
+                    if(existingProject != nil){
+                        Button(action:{
+                            uvm.deleteProject(existingProject!)
+                        }){
+                            Circle()
+                                .fill(.red)
+                                .frame(width: 44, height: 44)
+                                .overlay(
+                                    Circle().stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                                )
+                                .overlay(
+                                    Image(systemName: "trash")
+                                        .foregroundColor(.white)
+                                        .font(.system(size: 20))
+                                        .offset(y: -2)
+                                )
+                                .shadow(radius: 2)
+                        }
+                    }
                     Button(
                         action:{
                             if(existingProject == nil){
@@ -55,25 +74,7 @@ struct DrawingView: View {
 
                     }
                 }
-                if(existingProject != nil){
-                    Button(action:{
-                        uvm.deleteProject(existingProject!)
-                    }){
-                        Circle()
-                            .fill(.red)
-                            .frame(width: 44, height: 44)
-                            .overlay(
-                                Circle().stroke(Color.gray.opacity(0.5), lineWidth: 1)
-                            )
-                            .overlay(
-                                Image(systemName: "trash")
-                                    .foregroundColor(.white)
-                                    .font(.system(size: 20))
-                                    .offset(y: -2)
-                            )
-                            .shadow(radius: 2)
-                    }
-                }
+                
 
                 
                 
