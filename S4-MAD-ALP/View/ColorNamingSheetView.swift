@@ -8,26 +8,21 @@
 import SwiftUI
 
 struct ColorNamingSheetView: View {
-    // MARK: - Environment and State Bindings
-    @Environment(\.dismiss) var dismiss // To programmatically dismiss the sheet
+    @Environment(\.dismiss) var dismiss
 
-    @Binding var newColorName: String // Two-way binding for the text field
-    let pendingNewHex: String? // The hex code of the color to be named
+    @Binding var newColorName: String
+    let pendingNewHex: String?
 
-    // MARK: - Actions
-    var onSave: (String) -> Void // Closure to call when saving
-    var onCancel: () -> Void // Closure to call when cancelling
+    var onSave: (String) -> Void
+    var onCancel: () -> Void
 
-    // MARK: - Computed Properties
     private var saveButtonEnabled: Bool {
         !newColorName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
-    // MARK: - Body
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
-                // MARK: - Header
                 Text("Congratulations! 🎉")
                     .font(.title2)
                 Text("You've discovered a new color!")
@@ -35,8 +30,7 @@ struct ColorNamingSheetView: View {
                     .foregroundColor(.secondary)
                     .padding(.bottom, 10)
 
-                // MARK: - Color Preview
-                if let hex = pendingNewHex {
+                if let hex = pendingNewHex, !hex.isEmpty {
                     Circle()
                         .fill(Color(hex: hex))
                         .frame(width: 80, height: 80)
@@ -45,23 +39,34 @@ struct ColorNamingSheetView: View {
                         .padding(.bottom, 5)
                     
                     Text(hex.uppercased())
-                        .font(.custom("Menlo", size: 14)) // Monospaced font for hex
+                        .font(.custom("Menlo", size: 14))
+                        .foregroundColor(.gray)
+                        .padding(.bottom, 20)
+                } else {
+                    Circle()
+                        .fill(Color.gray.opacity(0.2))
+                        .frame(width: 80, height: 80)
+                        .overlay(
+                            Image(systemName: "questionmark")
+                                .font(.largeTitle)
+                                .foregroundColor(.white)
+                        )
+                        .padding(.bottom, 5)
+                    Text("Mixing Took Too Long, Please Try Again")
+                        .font(.custom("Menlo", size: 14))
                         .foregroundColor(.gray)
                         .padding(.bottom, 20)
                 }
 
-                // MARK: - Name Input Field
                 TextField("Enter color name", text: $newColorName)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding(.horizontal, 40)
                     .multilineTextAlignment(.center)
-                    .submitLabel(.done) // Changes the return key to "Done"
+                    .submitLabel(.done)
 
-                // MARK: - Save Button
                 Button(action: {
                     let finalName = newColorName.trimmingCharacters(in: .whitespacesAndNewlines)
-                    onSave(finalName) // Call the onSave closure
-                    // Dismissal is handled by the parent view after onSave completes
+                    onSave(finalName)
                 }) {
                     HStack {
                         Image(systemName: "sparkles")
@@ -78,41 +83,71 @@ struct ColorNamingSheetView: View {
                 .padding(.horizontal, 40)
                 .animation(.easeInOut, value: saveButtonEnabled)
 
-                Spacer() // Pushes content to the top
+                Spacer()
             }
-            .padding(.top, 30) // Padding for the content inside VStack
+            .padding(.top, 30)
             .navigationTitle("Name Your Color")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                // MARK: - Cancel Button in Toolbar
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Cancel") {
-                        onCancel() // Call the onCancel closure
-                        // Dismissal is handled by the parent view
+                        onCancel()
                     }
                 }
             }
-            // Optional: Apply an overall background to the sheet content
-            // .background(Color(.systemGroupedBackground).ignoresSafeArea())
         }
     }
 }
 
-// MARK: - Preview
-struct ColorNamingSheetView_Previews: PreviewProvider {
-    static var previews: some View {
-        // Example of how to use bindings in a preview
-        // State variables are needed in the preview provider to hold the binding's source of truth
-        @State var previewNewColorName: String = "My Awesome Color"
-        let previewPendingHex: String? = "#A1B2C3"
+// Updated Preview Section
+#Preview("With Valid Hex") {
+    // Helper struct to manage @State for the preview
+    struct PreviewContainer: View {
+        @State var colorName: String = "My Awesome Color"
+        let hex: String?
         
-        ColorNamingSheetView(
-            newColorName: $previewNewColorName,
-            pendingNewHex: previewPendingHex,
-            onSave: { name in print("Preview Save: \(name)") },
-            onCancel: { print("Preview Cancel") }
-        )
-        .environmentObject(ColorMixingViewModel()) // If your sheet uses environment objects directly
-        .environmentObject(UserViewModel())
+        var body: some View {
+            ColorNamingSheetView(
+                newColorName: $colorName,
+                pendingNewHex: hex,
+                onSave: { name in print("Preview Save: \(name)") },
+                onCancel: { print("Preview Cancel") }
+            )
+        }
     }
+    return PreviewContainer(hex: "#A1B2C3")
+}
+
+#Preview("With Nil Hex") {
+    struct PreviewContainer: View {
+        @State var colorName: String = "My Awesome Color"
+        let hex: String?
+        
+        var body: some View {
+            ColorNamingSheetView(
+                newColorName: $colorName,
+                pendingNewHex: hex,
+                onSave: { name in print("Preview Save: \(name)") },
+                onCancel: { print("Preview Cancel") }
+            )
+        }
+    }
+    return PreviewContainer(hex: nil)
+}
+
+#Preview("With Empty Hex") {
+    struct PreviewContainer: View {
+        @State var colorName: String = "My Awesome Color"
+        let hex: String?
+        
+        var body: some View {
+            ColorNamingSheetView(
+                newColorName: $colorName,
+                pendingNewHex: hex,
+                onSave: { name in print("Preview Save: \(name)") },
+                onCancel: { print("Preview Cancel") }
+            )
+        }
+    }
+    return PreviewContainer(hex: "")
 }

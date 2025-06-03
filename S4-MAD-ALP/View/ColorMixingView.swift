@@ -15,6 +15,11 @@ struct ColorMixingView: View {
     @State private var selected2: ColorItem?
     @Namespace private var animationNamespace
     
+    // MARK: - State for Naming Sheet
+    @State private var showingNameInputSheet = false
+    @State private var newColorNameToSave: String = ""
+    @State private var pendingNewHexToSave: String = ""
+    
     var mixedHex: String? {
         guard let s1 = selected1, let s2 = selected2 else { return nil }
         return mixColors(hex1: s1.hex, hex2: s2.hex)
@@ -31,6 +36,21 @@ struct ColorMixingView: View {
             mixingControlsSection
         }
         .background(Color(.systemGroupedBackground))
+        // MARK: - Sheet Modifier for Naming New Color
+        .sheet(isPresented: $showingNameInputSheet, onDismiss: handleSheetDismiss) {
+            ColorNamingSheetView(
+                newColorName: $newColorNameToSave,
+                pendingNewHex: pendingNewHexToSave,
+                onSave: { finalName in
+                    saveNewColorWithName(name: finalName)
+                },
+                onCancel: {
+                    closeNameInputSheet(didSave: false)
+                }
+            )
+            .environmentObject(viewModel)
+            .environmentObject(userViewModel)
+        }
     }
     
     // MARK: - Header Section
@@ -102,7 +122,7 @@ struct ColorMixingView: View {
                     .frame(width: 56, height: 56)
                     .overlay(selectionOverlay(isSelected: isSelected))
                     .shadow(color: isSelected ? Color(hex: color.hex).opacity(0.4) : Color.black.opacity(0.1),
-                           radius: isSelected ? 8 : 4, x: 0, y: 2)
+                            radius: isSelected ? 8 : 4, x: 0, y: 2)
                     .scaleEffect(isSelected ? 1.1 : 1.0)
                 
                 if let number = selectionNumber {
@@ -118,7 +138,8 @@ struct ColorMixingView: View {
             Text(color.name)
                 .font(.caption2)
                 .foregroundColor(.secondary)
-                .monospacedDigit()
+                .lineLimit(1)
+                .truncationMode(.tail)
         }
         .animation(.spring(response: 0.4, dampingFraction: 0.7), value: isSelected)
     }
@@ -158,8 +179,8 @@ struct ColorMixingView: View {
         VStack(spacing: 20) {
             selectedColorsSection
             
-            if let mixedHex {
-                resultPreviewSection(mixedHex: mixedHex)
+            if let currentMixedHex = mixedHex {
+                resultPreviewSection(mixedHex: currentMixedHex)
             }
             
             mixButton
@@ -237,7 +258,7 @@ struct ColorMixingView: View {
     private func slotBorder(hasColor: Bool) -> some View {
         Circle()
             .stroke(hasColor ? Color.clear : Color.gray.opacity(0.3),
-                   style: StrokeStyle(lineWidth: 2, dash: hasColor ? [] : [5, 5]))
+                    style: StrokeStyle(lineWidth: 2, dash: hasColor ? [] : [5, 5]))
     }
     
     private func slotPlaceholder(slotNumber: Int, hasColor: Bool) -> some View {
@@ -302,10 +323,7 @@ struct ColorMixingView: View {
     
     private var mixButton: some View {
         Button(action: {
-            withAnimation(.easeInOut(duration: 0.3)) {
-                mixSelectedColors()
-                
-            }
+            triggerMixSelectedColors()
         }) {
             HStack(spacing: 8) {
                 Image(systemName: "wand.and.stars")
@@ -335,7 +353,7 @@ struct ColorMixingView: View {
         RoundedRectangle(cornerRadius: 12)
             .fill(canMix ?
                   LinearGradient(colors: [Color.blue, Color.purple], startPoint: .leading, endPoint: .trailing) :
-                  LinearGradient(colors: [Color.gray, Color.gray], startPoint: .leading, endPoint: .trailing)
+                    LinearGradient(colors: [Color.gray.opacity(0.7), Color.gray.opacity(0.5)], startPoint: .leading, endPoint: .trailing)
             )
     }
     
@@ -352,19 +370,49 @@ struct ColorMixingView: View {
         }
     }
     
-    private func mixSelectedColors() {
+    private func triggerMixSelectedColors() {
         guard let color1 = selected1, let color2 = selected2 else { return }
         
-        let newHex = mixColors(hex1: color1.hex, hex2: color2.hex)
+        let newHexValue = mixColors(hex1: color1.hex, hex2: color2.hex)
         
-        if !viewModel.isColorUnlocked(newHex) {
-            let newColor = ColorItem(id: UUID(), name: "Mixed", hex: newHex)
-            viewModel.addNewColor(newColor)
-            userViewModel.gainXP(xp: 10)
+        if !viewModel.isColorUnlocked(newHexValue) {
+            pendingNewHexToSave = newHexValue
+            newColorNameToSave = ""
+            withAnimation(.easeInOut) {
+                showingNameInputSheet = true
+            }
+        } else {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                selected1 = nil
+                selected2 = nil
+            }
         }
+    }
+    
+    private func saveNewColorWithName(name: String) {
+        let hex = pendingNewHexToSave
         
+        let newColor = ColorItem(id: UUID(), name: name, hex: hex)
+        
+        viewModel.addNewColor(newColor)
+        userViewModel.gainXP(xp: 10)
+        
+        closeNameInputSheet(didSave: true)
+    }
+    
+    private func closeNameInputSheet(didSave: Bool) {
+        if showingNameInputSheet {
+            withAnimation(.easeInOut) {
+                showingNameInputSheet = false
+            }
+        }
         selected1 = nil
         selected2 = nil
+        pendingNewHexToSave = ""
+        newColorNameToSave = ""    }
+    
+    private func handleSheetDismiss() {
+        closeNameInputSheet(didSave: false)
     }
 }
 

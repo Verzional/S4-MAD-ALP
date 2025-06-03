@@ -36,6 +36,4 @@ class CanvasViewModel: ObservableObject {
     func changeLineWidth(to width: CGFloat) {
         strokeWidth = width
     }
-    
-    
 }

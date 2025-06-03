@@ -28,7 +28,6 @@ struct CanvasView: View {
 
         
     }
-    
 }
 
 #Preview {

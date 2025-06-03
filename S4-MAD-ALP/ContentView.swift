@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject var userAuth: UserViewModel // Access the UserViewModel
+    @EnvironmentObject var userAuth: UserViewModel 
 
     var body: some View {
         if userAuth.isLogin {
