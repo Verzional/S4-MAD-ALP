@@ -10,6 +10,8 @@ import PencilKit
 
 struct ProjectsView: View {
     @EnvironmentObject var userData: UserViewModel
+    @EnvironmentObject var cvm: DrawingViewModel
+    @EnvironmentObject var cvcm: ColorMixingViewModel
 
     let columns = [
         GridItem(.adaptive(minimum: 150), spacing: 20)
@@ -24,9 +26,9 @@ struct ProjectsView: View {
                         .fontWeight(.bold)
                     Spacer()
                     NavigationLink(destination: DrawingView(existingProject: nil)
-                                    .environmentObject(DrawingViewModel())
+                                    .environmentObject(cvm)
                                     .environmentObject(userData)
-                                    .environmentObject(ColorMixingViewModel())
+                                    .environmentObject(cvcm)
                     ) {
                         Image(systemName: "plus.circle.fill")
                             .font(.title)
@@ -58,9 +60,9 @@ struct ProjectsView: View {
                         LazyVGrid(columns: columns, spacing: 20) {
                             ForEach(userData.projects) { project in
                                 NavigationLink(destination: DrawingView(existingProject: project)
-                                    .environmentObject(DrawingViewModel())
+                                    .environmentObject(cvm)
                                     .environmentObject(userData)
-                                    .environmentObject(ColorMixingViewModel())
+                                    .environmentObject(cvcm)
                                 ) {
                                     ProjectCardView(project: project)
                                 }
@@ -80,10 +82,9 @@ struct ProjectsView: View {
     }
 }
 
-
-
-
 #Preview {
     ProjectsView()
         .environmentObject(UserViewModel())
+        .environmentObject(DrawingViewModel())
+        .environmentObject(ColorMixingViewModel())
 }
