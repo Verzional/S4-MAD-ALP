@@ -71,11 +71,11 @@ struct DrawingView: View {
                                     .offset(y: -2)
                             )
                             .shadow(radius: 2)
-
+                        
                     }
                 }
                 
-
+                
                 
                 
                 brushSizeSection
@@ -113,8 +113,8 @@ struct DrawingView: View {
         .onAppear {
             cvm.levelCheck(level: uvm.userModel.level)
             if(existingProject != nil){
-                                           cvm.drawing = existingProject?.drawing ?? PKDrawing()
-                                       }
+                cvm.drawing = existingProject?.drawing ?? PKDrawing()
+            }
         }
         .sheet(isPresented: $presentNameInputView){
             ProjectNameInput(uvm: uvm,  drawingToSave: cvm.drawing)
@@ -221,7 +221,9 @@ struct DrawingView: View {
             }
             
             func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
-                viewModel.drawing = canvasView.drawing
+                DispatchQueue.main.async { [weak self] in
+                    self?.viewModel.drawing = canvasView.drawing
+                }
             }
         }
     }
@@ -239,21 +241,8 @@ extension Color {
 
 
 #Preview {
-    let drawingVM = DrawingViewModel()
-    let colorMixingVM = ColorMixingViewModel()
-    let userVM = UserViewModel()
-    
-    colorMixingVM.unlockedColors = [
-        ColorItem(id: UUID(), name: "Preview Red", hex: "#FF0000"),
-        ColorItem(id: UUID(), name: "Preview Green", hex: "#00FF00"),
-        ColorItem(id: UUID(), name: "Preview Blue", hex: "#0000FF")
-    ]
-    userVM.userModel.level = 1
-    drawingVM.levelCheck(level: userVM.userModel.level)
-    
-    
-    return DrawingView()
-        .environmentObject(drawingVM)
-        .environmentObject(colorMixingVM)
-        .environmentObject(userVM)
+    DrawingView()
+        .environmentObject(DrawingViewModel())
+        .environmentObject(UserViewModel())
+        .environmentObject(ColorMixingViewModel())
 }

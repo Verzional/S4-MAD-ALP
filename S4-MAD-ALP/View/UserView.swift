@@ -119,7 +119,7 @@ struct UserView: View {
                                 await userAuth.register(imageData: profileImageData)
                                 if userAuth.registrationSuccess {
                                     withAnimation {
-                                        isRegister = false
+                                        isRegister = false // This line redirects to login state
                                         tempProfileImage = nil
                                         profileImageData = nil
                                     }

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ColorPickerSheetView: View {
     @EnvironmentObject var viewModel: ColorMixingViewModel
+    @EnvironmentObject var userViewModel: UserViewModel
     @Environment(\.dismiss) var dismiss
 
     @State private var searchText: String = ""
@@ -17,9 +18,9 @@ struct ColorPickerSheetView: View {
 
     private var filteredColors: [ColorItem] {
         if searchText.isEmpty {
-            return viewModel.unlockedColors
+            return userViewModel.unlockedColors
         } else {
-            return viewModel.unlockedColors.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+            return userViewModel.unlockedColors.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
         }
     }
 
@@ -120,9 +121,10 @@ struct ColorPickerSheetView: View {
 #Preview("Color Picker Sheet") {
     struct PreviewContainer: View {
         @StateObject var mockViewModel = ColorMixingViewModel()
+        @StateObject var mockUserViewModel = UserViewModel()
         
         init() {
-            mockViewModel.unlockedColors = [
+            mockUserViewModel.unlockedColors = [
                 ColorItem(id: UUID(), name: "Fiery Red", hex: "#FF0000"),
                 ColorItem(id: UUID(), name: "Ocean Blue", hex: "#0000FF"),
                 ColorItem(id: UUID(), name: "Forest Green", hex: "#008000"),
@@ -139,6 +141,7 @@ struct ColorPickerSheetView: View {
                 print("Preview: Selected color \(selectedColor.name)")
             })
             .environmentObject(mockViewModel)
+            .environmentObject(mockUserViewModel)
         }
     }
     
@@ -148,12 +151,14 @@ struct ColorPickerSheetView: View {
 #Preview("Color Picker Sheet (Empty)") {
     struct PreviewContainerEmpty: View {
         @StateObject var mockViewModel = ColorMixingViewModel()
+        @StateObject var mockUserViewModel = UserViewModel()
         
         var body: some View {
             ColorPickerSheetView(onColorSelect: { selectedColor in
                 print("Preview: Selected color \(selectedColor.name)")
             })
             .environmentObject(mockViewModel)
+            .environmentObject(mockUserViewModel) 
         }
     }
     

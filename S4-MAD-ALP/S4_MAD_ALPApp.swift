@@ -13,8 +13,8 @@ import SwiftUI
 struct S4_MAD_ALPApp: App {
     @StateObject private var cvm = DrawingViewModel()
     @StateObject private var cmvm = ColorMixingViewModel()
-    @StateObject var userAuth = UserViewModel()
     @StateObject private var themeDrawing = ThemeDrawingViewModel()
+    @StateObject var userAuth = UserViewModel()
 
     init() {
         FirebaseApp.configure()
@@ -26,11 +26,11 @@ struct S4_MAD_ALPApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainView()
+            ContentView()
                 .environmentObject(cvm)
                 .environmentObject(cmvm)
                 .environmentObject(themeDrawing)
+                .environmentObject(userAuth)
         }
-        .environmentObject(userAuth)
     }
 }

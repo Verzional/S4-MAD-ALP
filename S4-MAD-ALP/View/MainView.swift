@@ -25,7 +25,7 @@ struct MainView: View {
                 Label("Mixing", systemImage: "paintpalette.fill")
             }
             
-            ProfileAccountView().tabItem{
+            ProfileView().tabItem{
                 Label("Profile", systemImage: "person.fill")
             }
         }

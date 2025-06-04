@@ -1,8 +1,8 @@
 import SwiftUI
 
-struct ProfileAccountView: View {
+struct ProfileView: View {
     @EnvironmentObject var userAuth: UserViewModel
-
+    
     var body: some View {
         NavigationStack {
             ZStack(alignment: .top){
@@ -11,14 +11,14 @@ struct ProfileAccountView: View {
                         gradient: Gradient(colors: [Color(hex: "A7328C"), Color(hex: "f03e3e"), Color(hex: "F9B351")]),
                         startPoint: .bottomLeading,
                         endPoint: .topTrailing
-                                    )
+                    )
                 ).frame(width: UIScreen.main.bounds.width * 1.75, height: 450)
                     .offset(y: -280)
                 VStack {
-
+                    
                     Spacer()
                         .frame(height: 40)
-                                    VStack(spacing: 20) {
+                    VStack(spacing: 20) {
                         ZStack(alignment: .bottom) {
                             GeometryReader { geometry in
                                 Circle()
@@ -102,9 +102,20 @@ struct ProfileAccountView: View {
                         }
                         .padding(.horizontal, 24)
                         
+                        Button(action: {
+                            Task {
+                                await userAuth.logout()
+                            }
+                        }) {
+                            Text("Logout")
+                                .font(.headline)
+                                .foregroundColor(.red)
+                        }
+                        .padding(.top, 20)
+                        
                         Spacer()  // Pushes content to the center/top
                     }
-
+                    
                     .onAppear {
                         // Ensure user data is loaded when this view appears
                         // This is crucial if this view is presented directly after login
@@ -129,6 +140,6 @@ struct ProfileAccountView: View {
 
 
 #Preview {
-    ProfileAccountView()
+    ProfileView()
         .environmentObject(UserViewModel())  // Provide a UserViewModel for preview
 }

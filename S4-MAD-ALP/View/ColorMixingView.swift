@@ -15,7 +15,6 @@ struct ColorMixingView: View {
     @State private var selected2: ColorItem?
     @Namespace private var animationNamespace
     
-    // MARK: - State for Naming Sheet
     @State private var showingNameInputSheet = false
     @State private var newColorNameToSave: String = ""
     @State private var pendingNewHexToSave: String = ""
@@ -36,7 +35,6 @@ struct ColorMixingView: View {
             mixingControlsSection
         }
         .background(Color(.systemGroupedBackground))
-        // MARK: - Sheet Modifier for Naming New Color
         .sheet(isPresented: $showingNameInputSheet, onDismiss: handleSheetDismiss) {
             ColorNamingSheetView(
                 newColorName: $newColorNameToSave,
@@ -53,7 +51,6 @@ struct ColorMixingView: View {
         }
     }
     
-    // MARK: - Header Section
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -86,7 +83,7 @@ struct ColorMixingView: View {
     
     private var colorCountBadge: some View {
         HStack(spacing: 4) {
-            Text("\(viewModel.unlockedColors.count)")
+            Text("\(userViewModel.unlockedColors.count)")
                 .font(.caption)
                 .bold()
             Text("colors")
@@ -99,11 +96,10 @@ struct ColorMixingView: View {
         .clipShape(Capsule())
     }
     
-    // MARK: - Color Grid Section
     private var colorGridSection: some View {
         ScrollView {
             LazyVGrid(columns: columns, spacing: 20) {
-                ForEach(viewModel.unlockedColors) { color in
+                ForEach(userViewModel.unlockedColors) { color in
                     colorGridItem(for: color)
                 }
             }
@@ -301,9 +297,9 @@ struct ColorMixingView: View {
                         .bold()
                         .monospacedDigit()
                     
-                    Text(viewModel.isColorUnlocked(mixedHex) ? "Already unlocked" : "New color!")
+                    Text(viewModel.isColorUnlocked(mixedHex, from: userViewModel) ? "Already unlocked" : "New color!") // Changed
                         .font(.caption)
-                        .foregroundColor(viewModel.isColorUnlocked(mixedHex) ? .secondary : .green)
+                        .foregroundColor(viewModel.isColorUnlocked(mixedHex, from: userViewModel) ? .secondary : .green) // Changed
                 }
                 
                 Spacer()
@@ -375,7 +371,7 @@ struct ColorMixingView: View {
         
         let newHexValue = mixColors(hex1: color1.hex, hex2: color2.hex)
         
-        if !viewModel.isColorUnlocked(newHexValue) {
+        if !viewModel.isColorUnlocked(newHexValue, from: userViewModel) { // Changed
             pendingNewHexToSave = newHexValue
             newColorNameToSave = ""
             withAnimation(.easeInOut) {
@@ -394,7 +390,7 @@ struct ColorMixingView: View {
         
         let newColor = ColorItem(id: UUID(), name: name, hex: hex)
         
-        viewModel.addNewColor(newColor)
+        viewModel.addNewColor(newColor, to: userViewModel) // Changed
         userViewModel.gainXP(xp: 10)
         
         closeNameInputSheet(didSave: true)
