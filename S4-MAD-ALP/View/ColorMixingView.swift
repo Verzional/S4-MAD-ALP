@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ColorMixingView: View {
     @EnvironmentObject var viewModel: ColorMixingViewModel
+    @EnvironmentObject var userViewModel: UserViewModel
     
     @State private var selected1: ColorItem?
     @State private var selected2: ColorItem?
@@ -303,6 +304,7 @@ struct ColorMixingView: View {
         Button(action: {
             withAnimation(.easeInOut(duration: 0.3)) {
                 mixSelectedColors()
+                
             }
         }) {
             HStack(spacing: 8) {
@@ -358,6 +360,7 @@ struct ColorMixingView: View {
         if !viewModel.isColorUnlocked(newHex) {
             let newColor = ColorItem(id: UUID(), name: "Mixed", hex: newHex)
             viewModel.addNewColor(newColor)
+            userViewModel.gainXP(xp: 10)
         }
         
         selected1 = nil
