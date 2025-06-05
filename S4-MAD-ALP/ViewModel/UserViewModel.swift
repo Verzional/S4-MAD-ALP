@@ -2,8 +2,8 @@ import Firebase
 import FirebaseAuth
 import FirebaseDatabase
 import Foundation
-import SwiftUI
 import PencilKit
+import SwiftUI
 
 @MainActor
 class UserViewModel: ObservableObject {
@@ -54,7 +54,9 @@ class UserViewModel: ObservableObject {
             loadLocalProfileImage(userId: uid)
             await loadColorsFromFirebase()
 
-            print("✅ User profile loaded for user ID: \(uid), Name: \(self.userModel.name)")
+            print(
+                "✅ User profile loaded for user ID: \(uid), Name: \(self.userModel.name)"
+            )
 
         } else {
             print("⚠️ No user profile found for uid \(uid)")
@@ -94,23 +96,32 @@ class UserViewModel: ObservableObject {
                 self.falseCredential = false
                 self.registrationSuccess = true
                 self.profileImage = nil
+
             }
 
-            print("✅ Account successfully created for user: \(userModel.email) with UID: \(uid)")
+            print(
+                "✅ Account successfully created for user: \(userModel.email) with UID: \(uid)"
+            )
 
         } catch {
             DispatchQueue.main.async {
                 self.registrationSuccess = false
-                if let errorCode = AuthErrorCode(rawValue: (error as NSError).code) {
+                if let errorCode = AuthErrorCode(
+                    rawValue: (error as NSError).code
+                ) {
                     switch errorCode.code {
                     case .emailAlreadyInUse:
-                        self.authErrorMessage = "This email is already registered."
+                        self.authErrorMessage =
+                            "This email is already registered."
                     case .invalidEmail:
-                        self.authErrorMessage = "Please enter a valid email address."
+                        self.authErrorMessage =
+                            "Please enter a valid email address."
                     case .weakPassword:
-                        self.authErrorMessage = "Password must be at least 6 characters."
+                        self.authErrorMessage =
+                            "Password must be at least 6 characters."
                     default:
-                        self.authErrorMessage = "Registration failed: \(error.localizedDescription)"
+                        self.authErrorMessage =
+                            "Registration failed: \(error.localizedDescription)"
                     }
                 } else {
                     self.authErrorMessage = "Unexpected error occurred."
@@ -120,18 +131,19 @@ class UserViewModel: ObservableObject {
         }
     }
 
-    private func saveLocalProfileImage(userId: String, imageData: Data) {
+    func saveLocalProfileImage(userId: String, imageData: Data) {
         let key = profileImageKey + userId
         let base64String = imageData.base64EncodedString()
-        defaults.set(base64String, forKey: key)
         print("✅ Profile image saved locally for user ID: \(userId), Base64 URL: \(base64String.prefix(20))...")
+
     }
 
-    private func loadLocalProfileImage(userId: String) {
+    func loadLocalProfileImage(userId: String) {
         let key = profileImageKey + userId
         if let base64String = defaults.string(forKey: key),
-           let imageData = Data(base64Encoded: base64String),
-           let uiImage = UIImage(data: imageData) {
+            let imageData = Data(base64Encoded: base64String),
+            let uiImage = UIImage(data: imageData)
+        {
             DispatchQueue.main.async {
                 self.profileImage = Image(uiImage: uiImage)
                 print("✅ Profile image loaded locally for user ID: \(userId), Base64 URL: \(base64String.prefix(20))...")
@@ -159,23 +171,30 @@ class UserViewModel: ObservableObject {
                 self.loadLocalProfileImage(userId: uid)
             }
 
-            print("✅ SignIn Success for user ID: \(uid), Email: \(userModel.email)")
+            print(
+                "✅ SignIn Success for user ID: \(uid), Email: \(userModel.email)"
+            )
 
             try await fetchUser(uid: uid)
             await loadColorsFromFirebase()
 
         } catch {
             DispatchQueue.main.async {
-                if let errorCode = AuthErrorCode(rawValue: (error as NSError).code) {
+                if let errorCode = AuthErrorCode(
+                    rawValue: (error as NSError).code
+                ) {
                     switch errorCode.code {
                     case .userNotFound:
-                        self.authErrorMessage = "Account not found. Please register first."
+                        self.authErrorMessage =
+                            "Account not found. Please register first."
                     case .wrongPassword:
-                        self.authErrorMessage = "Incorrect password. Please try again."
+                        self.authErrorMessage =
+                            "Incorrect password. Please try again."
                     case .invalidEmail:
                         self.authErrorMessage = "Invalid email format."
                     default:
-                        self.authErrorMessage = "Login failed: \(error.localizedDescription)"
+                        self.authErrorMessage =
+                            "Login failed: \(error.localizedDescription)"
                     }
                 } else {
                     self.authErrorMessage = "Unexpected error occurred."
@@ -231,6 +250,7 @@ class UserViewModel: ObservableObject {
         }
     }
 
+
     func logout() async {
         do {
             try Auth.auth().signOut()
@@ -243,6 +263,7 @@ class UserViewModel: ObservableObject {
             self.unlockedColors = []
             loadInitialColors()
 
+
             print("✅ SignOut Success: User cleared.")
 
         } catch {
@@ -250,16 +271,17 @@ class UserViewModel: ObservableObject {
             print("❌ SignOut Error: \(error.localizedDescription)")
         }
     }
-    
+
     func gainXP(xp: Int) {
         self.userModel.currXP += xp
-        if(self.userModel.currXP >= self.userModel.maxXP){
+        if self.userModel.currXP >= self.userModel.maxXP {
             self.userModel.level += 1
             self.userModel.currXP -= self.userModel.maxXP
             self.userModel.maxXP = Int(Double(self.userModel.maxXP) * 1.1)
         }
         Task { await saveColorsToFirebase() }
     }
+
     
     // Modified addProject function
     func addProject(name: String? = nil, drawing: PKDrawing) {
@@ -277,13 +299,16 @@ class UserViewModel: ObservableObject {
             projects.append(newProjectInMemory)
             saveMetadataIndex()
             print("Project added and saved locally. Total projects: \(projects.count)")
+
         } else {
             print("Failed to save drawing data to disk for new project.")
         }
     }
+
         
     func deleteProject(_ projectToDelete: DrawingProject) {
         LocalDrawingStorage.shared.deleteDrawingData(filename: projectToDelete.drawingDataFilename)
+
         projects.removeAll { $0.id == projectToDelete.id }
         saveMetadataIndex()
         print("Project deleted. Remaining projects: \(projects.count)")
@@ -323,6 +348,7 @@ class UserViewModel: ObservableObject {
     
     func updateProjectDrawing(projectID: UUID, newDrawing: PKDrawing) {
         guard let index = projects.firstIndex(where: { $0.id == projectID }) else {
+
             print("Project with ID \(projectID) not found for update.")
             return
         }
@@ -331,11 +357,13 @@ class UserViewModel: ObservableObject {
         
         let success = LocalDrawingStorage.shared.saveDrawingData(newDrawing, filename: projects[index].drawingDataFilename)
         
+
         if success {
             saveMetadataIndex()
             print("Project \(projectID) drawing updated and saved.")
         } else {
             print("Failed to save updated drawing data for project \(projectID).")
+
         }
     }
 }
