@@ -4,24 +4,102 @@ import PencilKit
 struct DrawingView: View {
     @EnvironmentObject var cvm : DrawingViewModel
     @EnvironmentObject var cmvm: ColorMixingViewModel
+    @EnvironmentObject var uvm: UserViewModel
+    @Environment(\.dismiss) var dismiss
+    
+    var existingProject: DrawingProject?
+    
+    @State var presentNameInputView: Bool = false
+
+    
 
     var body: some View {
-            
-        
+        NavigationView{
             VStack(spacing: 20) {
-                CanvasViewWrapper()
-                    .environmentObject(cvm)
-                    .background(Color.white)
-                    .frame(maxHeight: .infinity)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                toolPickerSection
-                        colorPaletteSection
-                        brushSizeSection
+                HStack{
+                    if(existingProject != nil){
+                        Button(action:{
+                            uvm.deleteProject(existingProject!)
+                        }){
+                            Image(systemName: "trash")
+                        }
                     }
-                    .padding(16)
-                    .background(Color(.systemGroupedBackground))
+                    Spacer()
+                    Button(
+                        action:{
+                            if(existingProject == nil){
+                                presentNameInputView = true
+                            }else{
+                                uvm.updateProjectDrawing(projectID: existingProject!.id, newDrawing: cvm.drawing)
+                                dismiss()
+                                
+                            }
+                        }
+                    ){
+                        Image(systemName: "square.and.arrow.down")
+                            .font(.title2)
+                            .foregroundColor(.blue)
+                            .frame(width: 30, height: 30)
+                    }
+                }
+                
+                           CanvasViewWrapper()
+                               .environmentObject(cvm)
+                               .background(Color.white)
+                               .frame(minHeight: 300, maxHeight: 600) // Ensure canvas has a visible height range
+                               .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                           // MARK: - Custom Tab Buttons
+                           HStack {
+                               ForEach(DrawingViewModel.ToolTab.allCases) { tab in
+                                   Button(action: {
+                                       withAnimation {
+                                           cvm.selectedTab = tab
+                                       }
+                                   }) {
+                                       Label(tab.rawValue, systemImage: tab.systemImage)
+                                           .font(.headline)
+                                           .padding(.vertical, 8)
+                                           .padding(.horizontal, 15)
+                                           .background(cvm.selectedTab == tab ? Color.accentColor : Color(.systemGray5))
+                                           .foregroundColor(cvm.selectedTab == tab ? .white : .primary)
+                                           .cornerRadius(10)
+                                   }
+                               }
+                           }
+                           .padding(.horizontal, 16)
+                           // MARK: - Conditionally Displayed Tool Sections
+                           Group {
+                               if cvm.selectedTab == .tools {
+                                   toolPickerSection
+                               } else if cvm.selectedTab == .colors {
+                                   colorPaletteSection
+                               } else if cvm.selectedTab == .size {
+                                   brushSizeSection
+                               }
+                           }
+
+                            .frame(height: 100)
+
+                       }
+                       .padding(16)
+                       .background(Color(.systemGroupedBackground))
+                       .onAppear{
+                           cvm.levelCheck(level: uvm.userModel.level)
+                           if(existingProject != nil){
+                               cvm.drawing = existingProject?.drawing ?? PKDrawing()
+                           }
+                       }
+                       .sheet(isPresented: $presentNameInputView){
+                           ProjectNameInput(uvm: uvm,  drawingToSave: cvm.drawing)
+                       }
+                        
+        }
+
+    
 
     }
+    
 
     func toolButton(icon: String, selected: Bool, disabled: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
@@ -258,4 +336,5 @@ struct DrawingView: View {
     DrawingView()
         .environmentObject(DrawingViewModel())
         .environmentObject(ColorMixingViewModel())
+        .environmentObject(UserViewModel())
 }
