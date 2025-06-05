@@ -55,17 +55,16 @@ struct ProfileView: View {
                                     )
                             }
                         }
-                        .frame(width: 160, height: 160)  // Match the ZStack's intended size
-                        
-                        // User Name
+                        .frame(width: 160, height: 160)
                         Text(
                             userAuth.userModel.name.isEmpty
                             ? "Guest User" : userAuth.userModel.name
                         )
-                        .font(.largeTitle)
+                        .font(.title)
                         .fontWeight(.bold)
                         .foregroundColor(.black)
                         .padding(.top, 10)
+                        .padding(.horizontal)
                         
                         VStack{
                             Text("Level \(userAuth.userModel.level)")
@@ -115,10 +114,9 @@ struct ProfileView: View {
                         
                         Spacer()  // Pushes content to the center/top
                     }
+                    .padding(.horizontal)
                     
                     .onAppear {
-                        // Ensure user data is loaded when this view appears
-                        // This is crucial if this view is presented directly after login
                         if let uid = userAuth.user?.uid {
                             Task {
                                 do {
