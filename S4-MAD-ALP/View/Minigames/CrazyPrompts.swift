@@ -9,7 +9,6 @@ struct CrazyPrompts: View {
     
     var body: some View {
 
-        
         VStack(spacing: 20) {
             Text(tvm.theme)
                 .font(.title3)

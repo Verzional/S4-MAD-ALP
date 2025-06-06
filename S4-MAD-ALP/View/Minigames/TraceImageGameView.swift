@@ -1,17 +1,31 @@
 import PencilKit
 import SwiftUI
 
-// MARK: - Trace Image Game View
 struct TraceImageGameView: View {
+    //agar layout menjadi responsif,
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    
+    //buat nyimper gambaran user,trus null able krna awalnya kan kosongan
     @State private var userDrawnImage: Image?
+    
+    // dua ini pokoknya untuk load gambar dari asset,
+    //ini ambil the real name of the image at asset from imagenamemapping
     @State private var currentImageKey: String
+    
+    //ini ambil the 'change' name of the image at asset from imagenamemapping
     @State private var currentImageName: String
+    
+    // Mengontrol apakah alert akan ditampilkan ketika pengguna mencoba
+    // menyelesaikan tracing tapi belum menggambar apa-apa.
     @State private var showingNoDrawingAlert = false
+    
+    //bool ini menunjukkan kalau user masih menggambar atau sudah tidak menggambar
     @State private var drawingFinished = false
-    @StateObject var drawingVM = DrawingViewModel()
+    
+    //panggil logic dari drawing viemmodel, objek ini hidup selama view hidup dan akan otomatis update tampilan saat ada perubahan.
+    @StateObject var cvm = DrawingViewModel()
 
-    // MARK: - Initialization
+    //ini buat ngambil si gambar yang ada di ImageNameMapping (imageNameMap)
     init() {
         let randomImage = imageNameMap.randomElement()
         _currentImageKey = State(initialValue: randomImage?.key ?? "2")
@@ -23,16 +37,21 @@ struct TraceImageGameView: View {
 
     // MARK: - Body
     var body: some View {
+        
+        // geometryReader ini untuk responsive besar layarnya. Ukuran canvasSize
+        // akan lebih besar di landscape (.regular) dan sedikit lebih kecil di portrait (.compact)
         GeometryReader { geometry in
             let maxCanvasSize = min(geometry.size.width, geometry.size.height)
             let canvasSize =
                 maxCanvasSize * (horizontalSizeClass == .regular ? 0.85 : 0.9)
 
             ZStack {
+                //ini pas mau mulai drawing, jadi kalau drawng blm finish (click button), bkalan ada di view yang nampilin z-stacknya biar bisa menggambar
                 if !drawingFinished {
                     VStack {
                         // Header
                         HStack {
+                            // ngambil name si currImage
                             Text("Draw \(currentImageName)")
                                 .font(.title)
                                 .fontWeight(.bold)
@@ -42,60 +61,48 @@ struct TraceImageGameView: View {
 
                         // Canvas + Trace Image
                         ZStack {
+                            //ngambil imagenya
                             Image(currentImageKey)
                                 .resizable()
                                 .scaledToFit()
                                 .opacity(0.3)
                                 .frame(width: canvasSize, height: canvasSize)
 
+                            //ngambil canvas wrappernya
                             CanvasViewWrapper()
-                                .environmentObject(drawingVM)
+                                .environmentObject(cvm)
                                 .frame(width: canvasSize, height: canvasSize)
                                 .aspectRatio(1, contentMode: .fit)
                                 .background(Color.clear)
                                 .border(Color.gray, width: 1)
                         }
 
-                        // Controls
-                        if horizontalSizeClass == .regular {
-                            VStack(alignment: .center, spacing: 24) {
-                                // Tool Buttons
-                                ToolButtonView()
-                                    .environmentObject(drawingVM)
-                                    .layoutPriority(0)
+                        // Controls, ini handle yang orientationnya vertical atau horizontal
+                        let isLandscape = horizontalSizeClass == .regular
 
-                                // Color Palette
-                                ColorPaletteView()
-                                    .environmentObject(drawingVM)
-                                    .padding(.horizontal, 20)
-
-                                // Brush Size Slider
-                                VStack(alignment: .leading) {
-                                    BrushSizeView(cvm: drawingVM)
-                                }
-                                .layoutPriority(1)  // Force this to not be squeezed
-                                .padding(.horizontal)
-
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.top, 12)
-                        } else {
-                            ToolButtonView().environmentObject(drawingVM)
+                        //spacingnya ini untuk jarak antar viewnya
+                        VStack(alignment: .center, spacing: isLandscape ? 24 : 12) {
+                            ToolButtonView()
+                                .environmentObject(cvm)
 
                             ColorPaletteView()
-                                .padding(.horizontal, 20)
-                                .environmentObject(drawingVM)
-
-                            BrushSizeView(cvm: drawingVM)
+                                .environmentObject(cvm)
                                 .padding(.horizontal, 20)
 
+                            VStack(alignment: .leading) {
+                                BrushSizeView(cvm: cvm)
+                            }
+                            .layoutPriority(1)
+                            .padding(.horizontal)
                         }
 
+
                         Button {
-                            if drawingVM.drawing.strokes.isEmpty {
+                            if cvm.drawing.strokes.isEmpty {
                                 showingNoDrawingAlert = true
                             } else {
-                                let uiImage = drawingVM.drawing.image(
+                                //ini manggil dVM di drawing (PKDrawing) sebagai object, terus diubah jadi image (bawaan swiftui dalam PKDrawing UIImage) lalu ditampilin secara statis
+                                let uiImage = cvm.drawing.image(
                                     from: CGRect(
                                         x: 0,
                                         y: 0,
@@ -104,6 +111,7 @@ struct TraceImageGameView: View {
                                     ),
                                     scale: UIScreen.main.scale
                                 )
+                                // disini nanti Image dari PKDrawing itu diubah menjadi komponen SwiftUI
                                 userDrawnImage = Image(uiImage: uiImage)
                                 drawingFinished = true
                             }
@@ -144,6 +152,7 @@ struct TraceImageGameView: View {
                             .padding(.bottom, 20)
 
                         ZStack {
+                            //nampilin imagenya
                             Image(currentImageKey)
                                 .resizable()
                                 .scaledToFit()
@@ -151,6 +160,7 @@ struct TraceImageGameView: View {
                                 .opacity(0.3)
                                 .border(Color.gray, width: 1)
 
+                            //userDrawnimage ini nyimpen si uiimage yang udah dibuat sebelumnya (pada saat click finish) dalam var finalImage biar bisa ditampilin, resizeable sama scaledtofitnya ini biar bisa menyesuaikan besarnya.
                             if let finalImage = userDrawnImage {
                                 finalImage
                                     .resizable()
@@ -166,17 +176,26 @@ struct TraceImageGameView: View {
                         }
                         .padding(.bottom, 20)
 
+                        //untuk main ulang, nanti gambar dirandom lagi
                         Button("Play Again") {
-                            drawingVM.clear()
+                            //canvasnya diclean
+                            cvm.clear()
                             userDrawnImage = nil
                             drawingFinished = false
 
+                            //dirandom
                             let randomImage = imageNameMap.randomElement()
                             currentImageKey = randomImage?.key ?? "2"
                             currentImageName = randomImage?.value ?? "Apple"
-                            drawingVM.strokeColor = .black
-                            drawingVM.strokeWidth = 10.0
-                            drawingVM.usePen()
+                            
+                            //dibuat default colornya di black
+                            cvm.strokeColor = .black
+                            
+                            //tebal brushnya di 10
+                            cvm.strokeWidth = 10.0
+                            
+                            //pake pen
+                            cvm.usePen()
                         }
                         .font(.callout)
                         .fontWeight(.bold)
@@ -194,28 +213,41 @@ struct TraceImageGameView: View {
                             y: 3
                         )
                     }
+                    //kalau ini gk ada, nanti gk ditengah, mencong kanan kiri
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color.white)
                 }
             }
+            //Saat keyboard muncul (misalnya karena ada TextField), tampilan tidak akan naik atau bergeser ke atas.
             .ignoresSafeArea(.keyboard, edges: .bottom)
         }
     }
 }
 
+// the canvas
+//UIViewController ini bawaan dari swiftUInya, nah biar bisa ditampilin di view, hrus di wrap dulu
 private struct CanvasViewWrapper: UIViewControllerRepresentable {
-    @EnvironmentObject var viewModel: DrawingViewModel
+    
+    //buat manggil object dari viewmodel, pake environment krn kyk dipanggil panggil ke bbrp view
+    @EnvironmentObject var cvm: DrawingViewModel
 
+    //coordinator ini gunanya buat jadi jembatan antara swiftUI sama UIKit
     func makeCoordinator() -> Coordinator {
-        Coordinator(viewModel: viewModel)
+        Coordinator(viewModel: cvm)
     }
 
+    //Untuk membuat instance dari UIKit ViewController yang akan ditampilkan di SwiftUI
     func makeUIViewController(context: Context) -> UIViewController {
+        
+        //instance dari PKCanvasView disimpen dalam canvasView as object
         let canvasView = PKCanvasView()
+            
+        // part of PencilKi
         canvasView.drawingPolicy = .anyInput
         canvasView.delegate = context.coordinator
-        canvasView.tool = viewModel.tool
-        canvasView.drawing = viewModel.drawing
+        //ngambil ke cvm tool-toolnya
+        canvasView.tool = cvm.tool
+        //ngambil PKDrawingnya dri cvm
+        canvasView.drawing = cvm.drawing
         canvasView.backgroundColor = .clear
 
         let viewController = UIViewController()
@@ -227,35 +259,37 @@ private struct CanvasViewWrapper: UIViewControllerRepresentable {
         return viewController
     }
 
+    //Sinkronisasi dari SwiftUI ke UIKit saat ada perubahan state, ini bakalan automaticallly update si kalau ada perubahan yang dilakuin di canvasnya (PKDrawing)
     func updateUIViewController(
         _ uiViewController: UIViewController,
         context: Context
     ) {
         guard let canvasView = context.coordinator.canvasView else { return }
-        canvasView.tool = viewModel.tool
-        if canvasView.drawing != viewModel.drawing {
-            canvasView.drawing = viewModel.drawing
+        canvasView.tool = cvm.tool
+        if canvasView.drawing != cvm.drawing {
+            canvasView.drawing = cvm.drawing
         }
     }
 
+    // disini di koordinasiin, biar bisa tau user tu mulai sama selesainya kapan
     class Coordinator: NSObject, PKCanvasViewDelegate {
-        let viewModel: DrawingViewModel
+        let cvm: DrawingViewModel
         weak var canvasView: PKCanvasView?
 
         init(viewModel: DrawingViewModel) {
-            self.viewModel = viewModel
+            self.cvm = viewModel
         }
 
         func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
-            viewModel.drawing = canvasView.drawing
+            cvm.drawing = canvasView.drawing
         }
     }
 }
 
-// MARK: - Color Palette View
+// the color palette
 private struct ColorPaletteView: View {
-    @EnvironmentObject var drawingVM: DrawingViewModel
-    @StateObject var colorMixingVM = ColorMixingViewModel()
+    @EnvironmentObject var cvm: DrawingViewModel
+    @ObservedObject var colorMixingVM = ColorMixingViewModel()
 
     private var colorPaletteHeader: some View {
         HStack {
@@ -268,7 +302,7 @@ private struct ColorPaletteView: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
                 Circle()
-                    .fill(drawingVM.strokeColor)
+                    .fill(cvm.strokeColor)
                     .frame(width: 20, height: 20)
                     .overlay(
                         Circle().stroke(Color.black.opacity(0.3), lineWidth: 1)
@@ -289,9 +323,11 @@ private struct ColorPaletteView: View {
         }
     }
 
+    //manggil model colornya
     private func colorCircle(for item: ColorItem) -> some View {
+        //abis tu warna yang dipilih disimpen dulu
         let color = Color(hex: item.hex)
-        let isSelected = drawingVM.strokeColor == color
+        let isSelected = cvm.strokeColor == color
 
         return Circle()
             .fill(color)
@@ -307,14 +343,17 @@ private struct ColorPaletteView: View {
             )
             .onTapGesture {
                 withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
-                    drawingVM.strokeColor = color
-                    drawingVM.updateToolColorOrWidth()
+                    //nnti wrna yang dipilih baru dicocokin sama yang diviewmodel
+                    cvm.strokeColor = color
+                    //nnti diupdate ke colornya pake bawaan dari PencilKitnya
+                    cvm.updateToolColorOrWidth()
                 }
             }
             .animation(
                 .spring(response: 0.3, dampingFraction: 0.6),
                 value: isSelected
             )
+        //setelah itu bakalan dilempar lagi ke CanvasWrappernya biar bisa diimplement
     }
 
     private func selectedColorOverlay(isSelected: Bool) -> some View {
@@ -327,7 +366,7 @@ private struct ColorPaletteView: View {
         Circle()
             .stroke(Color.black.opacity(0.3), lineWidth: isSelected ? 2 : 1)
     }
-
+    
     var body: some View {
         VStack {
             colorPaletteHeader
@@ -345,9 +384,9 @@ private struct ColorPaletteView: View {
     }
 }
 
-// MARK: - ToolButton View
+// tool button
 private struct ToolButtonView: View {
-    @EnvironmentObject var drawingVM: DrawingViewModel
+    @EnvironmentObject var cvm: DrawingViewModel
 
     private func toolButton(
         icon: String,
@@ -355,6 +394,7 @@ private struct ToolButtonView: View {
         isDisabled: Bool,
         action: @escaping () -> Void
     ) -> some View {
+        //button ini buat tool toolnya
         Button(action: action) {
             Image(systemName: icon)
                 .font(.title2)
@@ -372,43 +412,44 @@ private struct ToolButtonView: View {
         HStack {
             toolButton(
                 icon: "pencil.tip",
-                isSelected: drawingVM.currentTool == .pen,
+                //ngmbil dri viewmodel kalau mau dipake, trus actionnya artiny pake toolnya
+                isSelected: cvm.currentTool == .pen,
                 isDisabled: false,
-                action: drawingVM.usePen
+                action: cvm.usePen
             )
             toolButton(
                 icon: "eraser",
-                isSelected: drawingVM.currentTool == .softEraser,
+                isSelected: cvm.currentTool == .softEraser,
                 isDisabled: false,
-                action: drawingVM.useSoftEraser
+                action: cvm.useSoftEraser
             )
             toolButton(
                 icon: "scissors",
-                isSelected: drawingVM.currentTool == .strokeEraser,
+                isSelected: cvm.currentTool == .strokeEraser,
                 isDisabled: false,
-                action: drawingVM.useStrokeEraser
+                action: cvm.useStrokeEraser
             )
             toolButton(
                 icon: "pencil",
-                isSelected: drawingVM.currentTool == .pencil,
-                isDisabled: !drawingVM.pencilEnabled,
-                action: drawingVM.usePencil
+                isSelected: cvm.currentTool == .pencil,
+                isDisabled: !cvm.pencilEnabled,
+                action: cvm.usePencil
             )
-            .disabled(!drawingVM.pencilEnabled)
+            .disabled(!cvm.pencilEnabled)
             toolButton(
                 icon: "paintbrush.pointed",
-                isSelected: drawingVM.currentTool == .marker,
-                isDisabled: !drawingVM.markerEnabled,
-                action: drawingVM.useMarker
+                isSelected: cvm.currentTool == .marker,
+                isDisabled: !cvm.markerEnabled,
+                action: cvm.useMarker
             )
-            .disabled(!drawingVM.markerEnabled)
+            .disabled(!cvm.markerEnabled)
             toolButton(
                 icon: "highlighter",
-                isSelected: drawingVM.currentTool == .crayon,
-                isDisabled: !drawingVM.crayonEnabled,
-                action: drawingVM.useCrayon
+                isSelected: cvm.currentTool == .crayon,
+                isDisabled: !cvm.crayonEnabled,
+                action: cvm.useCrayon
             )
-            .disabled(!drawingVM.crayonEnabled)
+            .disabled(!cvm.crayonEnabled)
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 8)
@@ -422,7 +463,9 @@ private struct ToolButtonView: View {
         )
     }
 }
+
 private struct BrushSizeView: View {
+    //cocok observed karena ada ysng butuh pemantauan lebih kyak lebar tipisnya brush
     @ObservedObject var cvm: DrawingViewModel
 
     var body: some View {
@@ -503,8 +546,6 @@ private struct BrushSizeView: View {
             )
     }
 }
-
-// MARK: - Preview Provider
 
 #Preview {
     TraceImageGameView()

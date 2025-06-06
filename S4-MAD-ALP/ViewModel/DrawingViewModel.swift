@@ -91,10 +91,4 @@ class DrawingViewModel: ObservableObject {
             crayonEnabled = true
         }
     }
-    
-    
-    
-
-    
-    
 }
