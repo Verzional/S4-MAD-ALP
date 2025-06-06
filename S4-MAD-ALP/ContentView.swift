@@ -8,11 +8,21 @@
 import SwiftUI
 
 struct ContentView: View {
+    @EnvironmentObject var userAuth: UserViewModel
+    
     var body: some View {
-        DrawingView()
+        if userAuth.isLogin {
+            MainView()
+        } else {
+            UserView() 
+        }
     }
 }
 
 #Preview {
     ContentView()
+        .environmentObject(UserViewModel())
+        .environmentObject(DrawingViewModel())
+        .environmentObject(ColorMixingViewModel())
+        .environmentObject(ThemeDrawingViewModel())
 }
