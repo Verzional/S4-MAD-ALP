@@ -9,10 +9,15 @@ import SwiftUI
 
 struct ColorMixingView: View {
     @EnvironmentObject var viewModel: ColorMixingViewModel
+    @EnvironmentObject var userViewModel: UserViewModel
     
     @State private var selected1: ColorItem?
     @State private var selected2: ColorItem?
     @Namespace private var animationNamespace
+    
+    @State private var showingNameInputSheet = false
+    @State private var newColorNameToSave: String = ""
+    @State private var pendingNewHexToSave: String = ""
     
     var mixedHex: String? {
         guard let s1 = selected1, let s2 = selected2 else { return nil }
@@ -30,9 +35,22 @@ struct ColorMixingView: View {
             mixingControlsSection
         }
         .background(Color(.systemGroupedBackground))
+        .sheet(isPresented: $showingNameInputSheet, onDismiss: handleSheetDismiss) {
+            ColorNamingSheetView(
+                newColorName: $newColorNameToSave,
+                pendingNewHex: pendingNewHexToSave,
+                onSave: { finalName in
+                    saveNewColorWithName(name: finalName)
+                },
+                onCancel: {
+                    closeNameInputSheet(didSave: false)
+                }
+            )
+            .environmentObject(viewModel)
+            .environmentObject(userViewModel)
+        }
     }
     
-    // MARK: - Header Section
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -65,7 +83,7 @@ struct ColorMixingView: View {
     
     private var colorCountBadge: some View {
         HStack(spacing: 4) {
-            Text("\(viewModel.unlockedColors.count)")
+            Text("\(userViewModel.unlockedColors.count)")
                 .font(.caption)
                 .bold()
             Text("colors")
@@ -78,11 +96,10 @@ struct ColorMixingView: View {
         .clipShape(Capsule())
     }
     
-    // MARK: - Color Grid Section
     private var colorGridSection: some View {
         ScrollView {
             LazyVGrid(columns: columns, spacing: 20) {
-                ForEach(viewModel.unlockedColors) { color in
+                ForEach(userViewModel.unlockedColors) { color in
                     colorGridItem(for: color)
                 }
             }
@@ -101,7 +118,7 @@ struct ColorMixingView: View {
                     .frame(width: 56, height: 56)
                     .overlay(selectionOverlay(isSelected: isSelected))
                     .shadow(color: isSelected ? Color(hex: color.hex).opacity(0.4) : Color.black.opacity(0.1),
-                           radius: isSelected ? 8 : 4, x: 0, y: 2)
+                            radius: isSelected ? 8 : 4, x: 0, y: 2)
                     .scaleEffect(isSelected ? 1.1 : 1.0)
                 
                 if let number = selectionNumber {
@@ -114,10 +131,11 @@ struct ColorMixingView: View {
                 }
             }
             
-            Text(color.hex.uppercased())
+            Text(color.name)
                 .font(.caption2)
                 .foregroundColor(.secondary)
-                .monospacedDigit()
+                .lineLimit(1)
+                .truncationMode(.tail)
         }
         .animation(.spring(response: 0.4, dampingFraction: 0.7), value: isSelected)
     }
@@ -157,8 +175,8 @@ struct ColorMixingView: View {
         VStack(spacing: 20) {
             selectedColorsSection
             
-            if let mixedHex {
-                resultPreviewSection(mixedHex: mixedHex)
+            if let currentMixedHex = mixedHex {
+                resultPreviewSection(mixedHex: currentMixedHex)
             }
             
             mixButton
@@ -236,7 +254,7 @@ struct ColorMixingView: View {
     private func slotBorder(hasColor: Bool) -> some View {
         Circle()
             .stroke(hasColor ? Color.clear : Color.gray.opacity(0.3),
-                   style: StrokeStyle(lineWidth: 2, dash: hasColor ? [] : [5, 5]))
+                    style: StrokeStyle(lineWidth: 2, dash: hasColor ? [] : [5, 5]))
     }
     
     private func slotPlaceholder(slotNumber: Int, hasColor: Bool) -> some View {
@@ -279,9 +297,9 @@ struct ColorMixingView: View {
                         .bold()
                         .monospacedDigit()
                     
-                    Text(viewModel.isColorUnlocked(mixedHex) ? "Already unlocked" : "New color!")
+                    Text(viewModel.isColorUnlocked(mixedHex, from: userViewModel) ? "Already unlocked" : "New color!") // Changed
                         .font(.caption)
-                        .foregroundColor(viewModel.isColorUnlocked(mixedHex) ? .secondary : .green)
+                        .foregroundColor(viewModel.isColorUnlocked(mixedHex, from: userViewModel) ? .secondary : .green) // Changed
                 }
                 
                 Spacer()
@@ -301,9 +319,7 @@ struct ColorMixingView: View {
     
     private var mixButton: some View {
         Button(action: {
-            withAnimation(.easeInOut(duration: 0.3)) {
-                mixSelectedColors()
-            }
+            triggerMixSelectedColors()
         }) {
             HStack(spacing: 8) {
                 Image(systemName: "wand.and.stars")
@@ -333,7 +349,7 @@ struct ColorMixingView: View {
         RoundedRectangle(cornerRadius: 12)
             .fill(canMix ?
                   LinearGradient(colors: [Color.blue, Color.purple], startPoint: .leading, endPoint: .trailing) :
-                  LinearGradient(colors: [Color.gray, Color.gray], startPoint: .leading, endPoint: .trailing)
+                    LinearGradient(colors: [Color.gray.opacity(0.7), Color.gray.opacity(0.5)], startPoint: .leading, endPoint: .trailing)
             )
     }
     
@@ -350,17 +366,54 @@ struct ColorMixingView: View {
         }
     }
     
-    private func mixSelectedColors() {
+    private func triggerMixSelectedColors() {
         guard let color1 = selected1, let color2 = selected2 else { return }
         
-        let newHex = mixColors(hex1: color1.hex, hex2: color2.hex)
+        let newHexValue = mixColors(hex1: color1.hex, hex2: color2.hex)
         
-        if !viewModel.isColorUnlocked(newHex) {
-            let newColor = ColorItem(id: UUID(), name: "Mixed", hex: newHex)
-            viewModel.addNewColor(newColor)
+        if !viewModel.isColorUnlocked(newHexValue, from: userViewModel) { // Changed
+            pendingNewHexToSave = newHexValue
+            newColorNameToSave = ""
+            withAnimation(.easeInOut) {
+                showingNameInputSheet = true
+            }
+        } else {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                selected1 = nil
+                selected2 = nil
+            }
         }
+    }
+    
+    private func saveNewColorWithName(name: String) {
+        let hex = pendingNewHexToSave
         
+        let newColor = ColorItem(id: UUID(), name: name, hex: hex)
+        
+        viewModel.addNewColor(newColor, to: userViewModel) // Changed
+        userViewModel.gainXP(xp: 10)
+        
+        closeNameInputSheet(didSave: true)
+    }
+    
+    private func closeNameInputSheet(didSave: Bool) {
+        if showingNameInputSheet {
+            withAnimation(.easeInOut) {
+                showingNameInputSheet = false
+            }
+        }
         selected1 = nil
         selected2 = nil
+        pendingNewHexToSave = ""
+        newColorNameToSave = ""    }
+    
+    private func handleSheetDismiss() {
+        closeNameInputSheet(didSave: false)
     }
+}
+
+#Preview {
+    ColorMixingView()
+        .environmentObject(ColorMixingViewModel())
+        .environmentObject(UserViewModel())
 }

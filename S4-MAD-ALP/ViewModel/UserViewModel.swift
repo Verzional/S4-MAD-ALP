@@ -3,22 +3,25 @@ import FirebaseAuth
 import FirebaseDatabase
 import Foundation
 import SwiftUI
+import PencilKit
 
 @MainActor
 class UserViewModel: ObservableObject {
     @Published var user: User?
     @Published var userModel: UserModel
-    @Published var userId: String?
-    @Published var isLogin: Bool // This will control the navigation
+    @Published var userId: String? // This is the optional property that can be nil
+    @Published var isLogin: Bool
     @Published var isRegister: Bool
     @Published var falseCredential: Bool
     @Published var authErrorMessage: String = ""
     @Published var registrationSuccess: Bool = false
-    @Published var profileImage: Image? // To hold the locally loaded image
+    @Published var profileImage: Image?
+    @Published var projects: [DrawingProject] = []
+    @Published var unlockedColors: [ColorItem] = []
 
     private let db = Database.database().reference()
     private let defaults = UserDefaults.standard
-    private let profileImageKey = "userProfileImage_" // Append user ID for multiple users
+    private let profileImageKey = "userProfileImage_"
 
     init() {
         self.user = nil
@@ -26,7 +29,20 @@ class UserViewModel: ObservableObject {
         self.isRegister = false
         self.falseCredential = false
         self.userModel = UserModel()
-        // No need to load image in init, will do it on login/fetch
+        loadInitialColors()
+    }
+
+    private func loadInitialColors() {
+        unlockedColors = [
+            ColorItem(id: UUID(), name: "White", hex: "#FFFFFF"),
+            ColorItem(id: UUID(), name: "Black", hex: "#000000"),
+            ColorItem(id: UUID(), name: "Red", hex: "#FF0000"),
+            ColorItem(id: UUID(), name: "Green", hex: "#00FF00"),
+            ColorItem(id: UUID(), name: "Blue", hex: "#0000FF"),
+            ColorItem(id: UUID(), name: "Yellow", hex: "#FFFF00"),
+            ColorItem(id: UUID(), name: "Magenta", hex: "#FF00FF"),
+            ColorItem(id: UUID(), name: "Cyan", hex: "#00FFFF")
+        ]
     }
 
     func fetchUser(uid: String) async throws {
@@ -35,10 +51,8 @@ class UserViewModel: ObservableObject {
         if let value = snapshot.value as? [String: Any] {
             self.userModel.name = value["name"] as? String ?? ""
             self.userModel.email = value["email"] as? String ?? ""
-            // We won't fetch image URL anymore
-
-            // Load local profile image
             loadLocalProfileImage(userId: uid)
+            await loadColorsFromFirebase()
 
             print("✅ User profile loaded for user ID: \(uid), Name: \(self.userModel.name)")
 
@@ -59,23 +73,27 @@ class UserViewModel: ObservableObject {
             let userData: [String: Any] = [
                 "name": userModel.name,
                 "email": userModel.email,
-                "image": "", // We won't store image path in DB for local storage
+                "image": "",
             ]
 
             try await db.child("users").child(uid).setValue(userData)
 
-            // Save image locally
+
             if let imageData = imageData {
                 saveLocalProfileImage(userId: uid, imageData: imageData)
             }
+            
+            self.user = result.user
+            self.userId = uid // Make sure userId is set here after registration
+            loadInitialColors()
+            await saveColorsToFirebase()
 
             DispatchQueue.main.async {
                 self.userModel.password = ""
                 self.authErrorMessage = ""
                 self.falseCredential = false
-                self.isRegister = true
                 self.registrationSuccess = true
-                self.profileImage = nil // Clear temporary image
+                self.profileImage = nil
             }
 
             print("✅ Account successfully created for user: \(userModel.email) with UID: \(uid)")
@@ -102,21 +120,21 @@ class UserViewModel: ObservableObject {
         }
     }
 
-    private func saveLocalProfileImage(userId: String, imageData: Data) {
+    func saveLocalProfileImage(userId: String, imageData: Data) {
         let key = profileImageKey + userId
         let base64String = imageData.base64EncodedString()
         defaults.set(base64String, forKey: key)
-        print("✅ Profile image saved locally for user ID: \(userId), Base64 URL: \(base64String.prefix(20))...") // Show first 20 chars
+        print("✅ Profile image saved locally for user ID: \(userId), Base64 URL: \(base64String.prefix(20))...")
     }
 
-    private func loadLocalProfileImage(userId: String) {
+    func loadLocalProfileImage(userId: String) {
         let key = profileImageKey + userId
         if let base64String = defaults.string(forKey: key),
            let imageData = Data(base64Encoded: base64String),
            let uiImage = UIImage(data: imageData) {
             DispatchQueue.main.async {
                 self.profileImage = Image(uiImage: uiImage)
-                print("✅ Profile image loaded locally for user ID: \(userId), Base64 URL: \(base64String.prefix(20))...") // Show first 20 chars
+                print("✅ Profile image loaded locally for user ID: \(userId), Base64 URL: \(base64String.prefix(20))...")
             }
         } else {
             print("⚠️ No local profile image found for user ID: \(userId)")
@@ -131,18 +149,20 @@ class UserViewModel: ObservableObject {
             )
 
             let uid = result.user.uid
+            self.user = result.user
+            self.userId = uid // Make sure userId is set here after login
 
             DispatchQueue.main.async {
                 self.falseCredential = false
                 self.authErrorMessage = ""
-                self.isLogin = true // Crucial: Set isLogin to true on successful login
-                // Load local profile image on login
+                self.isLogin = true
                 self.loadLocalProfileImage(userId: uid)
             }
 
             print("✅ SignIn Success for user ID: \(uid), Email: \(userModel.email)")
 
-            try await fetchUser(uid: uid) // This will also load the local image again
+            try await fetchUser(uid: uid)
+            await loadColorsFromFirebase()
 
         } catch {
             DispatchQueue.main.async {
@@ -166,21 +186,156 @@ class UserViewModel: ObservableObject {
         }
     }
 
+    func saveColorsToFirebase() async {
+        guard let uid = user?.uid else {
+            print("Error: User not logged in. Cannot save colors to Firebase.")
+            return
+        }
+        do {
+            let encodedColors = try JSONEncoder().encode(unlockedColors)
+            let colorsData = try JSONSerialization.jsonObject(with: encodedColors, options: .allowFragments)
+            try await db.child("users").child(uid).child("unlockedColors").setValue(colorsData)
+            print("✅ Unlocked colors saved to Firebase for user ID: \(uid)")
+        } catch {
+            print("❌ Error saving unlocked colors to Firebase: \(error.localizedDescription)")
+        }
+    }
+
+    func loadColorsFromFirebase() async {
+        guard let uid = user?.uid else {
+            print("Error: User not logged in. Cannot load colors from Firebase.")
+            return
+        }
+        do {
+            let snapshot = try await db.child("users").child(uid).child("unlockedColors").getData()
+            if let value = snapshot.value {
+                let jsonData = try JSONSerialization.data(withJSONObject: value, options: [])
+                let decodedColors = try JSONDecoder().decode([ColorItem].self, from: jsonData)
+                DispatchQueue.main.async {
+                    self.unlockedColors = decodedColors
+                    print("✅ Unlocked colors loaded from Firebase for user ID: \(uid)")
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self.unlockedColors = []
+                    self.loadInitialColors()
+                    print("⚠️ No unlocked colors found in Firebase for user ID: \(uid), loading initial colors.")
+                }
+            }
+        } catch {
+            print("❌ Error loading unlocked colors from Firebase: \(error.localizedDescription)")
+            DispatchQueue.main.async {
+                self.unlockedColors = []
+                self.loadInitialColors()
+            }
+        }
+    }
 
     func logout() async {
         do {
             try Auth.auth().signOut()
             self.user = nil
-            self.isLogin = false // Crucial: Set isLogin to false on logout
+            self.userId = nil // Clear userId on logout
+            self.isLogin = false
             self.falseCredential = false
             self.userModel = UserModel()
-            self.profileImage = nil // Clear displayed image on logout
+            self.profileImage = nil
+            self.unlockedColors = []
+            loadInitialColors()
 
             print("✅ SignOut Success: User cleared.")
 
         } catch {
             self.falseCredential = true
             print("❌ SignOut Error: \(error.localizedDescription)")
+        }
+    }
+    
+    func gainXP(xp: Int) {
+        self.userModel.currXP += xp
+        if(self.userModel.currXP >= self.userModel.maxXP){
+            self.userModel.level += 1
+            self.userModel.currXP -= self.userModel.maxXP
+            self.userModel.maxXP = Int(Double(self.userModel.maxXP) * 1.1)
+        }
+        Task { await saveColorsToFirebase() }
+    }
+    
+    // Modified addProject function
+    func addProject(name: String? = nil, drawing: PKDrawing) {
+        // Safely unwrap userId. If nil, print an error and return.
+        guard let currentUserId = self.userId else {
+            print("❌ Error: Cannot add project. User ID is nil. Please log in or register.")
+            // Optionally, you could show an alert to the user here.
+            return
+        }
+
+        let newProjectInMemory = DrawingProject(name: name, drawing: drawing, userId: currentUserId)
+        let success = LocalDrawingStorage.shared.saveDrawingData(newProjectInMemory.drawing, filename: newProjectInMemory.drawingDataFilename)
+            
+        if success {
+            projects.append(newProjectInMemory)
+            saveMetadataIndex()
+            print("Project added and saved locally. Total projects: \(projects.count)")
+        } else {
+            print("Failed to save drawing data to disk for new project.")
+        }
+    }
+        
+    func deleteProject(_ projectToDelete: DrawingProject) {
+        LocalDrawingStorage.shared.deleteDrawingData(filename: projectToDelete.drawingDataFilename)
+        projects.removeAll { $0.id == projectToDelete.id }
+        saveMetadataIndex()
+        print("Project deleted. Remaining projects: \(projects.count)")
+    }
+
+    private func saveMetadataIndex() {
+        let metadataArray = projects.map {
+            DrawingProjectMetadata(id: $0.id,
+                                   name: $0.name,
+                                   creationDate: $0.creationDate,
+                                   lastModifiedDate: $0.lastModifiedDate,
+                                   drawingDataFilename: $0.drawingDataFilename)
+        }
+        LocalDrawingStorage.shared.saveProjectsMetadata(metadataArray)
+    }
+
+    func loadProjectsFromDisk() {
+        let metadataArray = LocalDrawingStorage.shared.loadProjectsMetadata()
+        var loadedProjects: [DrawingProject] = []
+
+        for metadata in metadataArray {
+            if let drawing = LocalDrawingStorage.shared.loadDrawingData(filename: metadata.drawingDataFilename) {
+                let project = DrawingProject(id: metadata.id,
+                                             name: metadata.name,
+                                             drawing: drawing,
+                                             creationDate: metadata.creationDate,
+                                             lastModifiedDate: metadata.lastModifiedDate,
+                                             drawingDataFilename: metadata.drawingDataFilename)
+                loadedProjects.append(project)
+            } else {
+                print("Could not load drawing data for project ID: \(metadata.id)")
+            }
+        }
+        self.projects = loadedProjects
+        print("Loaded \(projects.count) projects from disk.")
+    }
+    
+    func updateProjectDrawing(projectID: UUID, newDrawing: PKDrawing) {
+        guard let index = projects.firstIndex(where: { $0.id == projectID }) else {
+            print("Project with ID \(projectID) not found for update.")
+            return
+        }
+        projects[index].drawing = newDrawing
+        projects[index].lastModifiedDate = Date()
+        
+        let success = LocalDrawingStorage.shared.saveDrawingData(newDrawing, filename: projects[index].drawingDataFilename)
+        
+        if success {
+            saveMetadataIndex()
+            print("Project \(projectID) drawing updated and saved.")
+        } else {
+            print("Failed to save updated drawing data for project \(projectID).")
         }
     }
 }
