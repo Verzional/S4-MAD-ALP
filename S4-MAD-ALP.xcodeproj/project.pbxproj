@@ -12,6 +12,10 @@
 		3F86AB192DE959E600294873 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 3F86AB182DE959E600294873 /* FirebaseAuth */; };
 		3F86AB1B2DE959E600294873 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 3F86AB1A2DE959E600294873 /* FirebaseCore */; };
 		3F86AB1D2DE959E600294873 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 3F86AB1C2DE959E600294873 /* FirebaseDatabase */; };
+		54A6B18C2DF4496800930A8F /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 54A6B18B2DF4496800930A8F /* FirebaseCore */; };
+		54A6B18E2DF4497100930A8F /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 54A6B18D2DF4497100930A8F /* FirebaseDatabase */; };
+		54A6B1902DF4498100930A8F /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 54A6B18F2DF4498100930A8F /* FirebaseAuth */; };
+		54A6B1922DF4498600930A8F /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = 54A6B1912DF4498600930A8F /* FirebaseAppCheck */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,11 +39,44 @@
 		3FDD96A82DDEBD3A005D2E16 /* S4-MAD-ALP.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "S4-MAD-ALP.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3FDD96B82DDEBD3B005D2E16 /* S4-MAD-ALPTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "S4-MAD-ALPTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3FDD96C22DDEBD3B005D2E16 /* S4-MAD-ALPUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "S4-MAD-ALPUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		54A6B1762DF4285400930A8F /* S4-MAD-ALP-MAC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "S4-MAD-ALP-MAC.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		54645B6D2DF5194A00F8DF55 /* Exceptions for "S4-MAD-ALP" folder in "S4-MAD-ALPTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Model/ColorItem.swift,
+				Model/DrawingModel.swift,
+				Model/UserModel.swift,
+				Utilities/LocalDrawingStorage.swift,
+				ViewModel/ColorMixingViewModel.swift,
+				ViewModel/DrawingViewModel.swift,
+				ViewModel/UserViewModel.swift,
+			);
+			target = 3FDD96B72DDEBD3B005D2E16 /* S4-MAD-ALPTests */;
+		};
+		54A6B1882DF42B9800930A8F /* Exceptions for "S4-MAD-ALP" folder in "S4-MAD-ALP-MAC" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Model/ColorItem.swift,
+				Model/UserModel.swift,
+				"Utilities/Color+Hex.swift",
+				Utilities/ColorMixer.swift,
+				Utilities/LocalDrawingStorage.swift,
+				ViewModel/ColorMixingViewModel.swift,
+			);
+			target = 54A6B1752DF4285400930A8F /* S4-MAD-ALP-MAC */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		3FDD96AA2DDEBD3A005D2E16 /* S4-MAD-ALP */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				54645B6D2DF5194A00F8DF55 /* Exceptions for "S4-MAD-ALP" folder in "S4-MAD-ALPTests" target */,
+				54A6B1882DF42B9800930A8F /* Exceptions for "S4-MAD-ALP" folder in "S4-MAD-ALP-MAC" target */,
+			);
 			path = "S4-MAD-ALP";
 			sourceTree = "<group>";
 		};
@@ -51,6 +88,11 @@
 		3FDD96C52DDEBD3B005D2E16 /* S4-MAD-ALPUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "S4-MAD-ALPUITests";
+			sourceTree = "<group>";
+		};
+		54A6B1772DF4285400930A8F /* S4-MAD-ALP-MAC */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "S4-MAD-ALP-MAC";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -82,6 +124,17 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		54A6B1732DF4285400930A8F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				54A6B1922DF4498600930A8F /* FirebaseAppCheck in Frameworks */,
+				54A6B18E2DF4497100930A8F /* FirebaseDatabase in Frameworks */,
+				54A6B1902DF4498100930A8F /* FirebaseAuth in Frameworks */,
+				54A6B18C2DF4496800930A8F /* FirebaseCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -91,6 +144,8 @@
 				3FDD96AA2DDEBD3A005D2E16 /* S4-MAD-ALP */,
 				3FDD96BB2DDEBD3B005D2E16 /* S4-MAD-ALPTests */,
 				3FDD96C52DDEBD3B005D2E16 /* S4-MAD-ALPUITests */,
+				54A6B1772DF4285400930A8F /* S4-MAD-ALP-MAC */,
+				54A6B18A2DF4496800930A8F /* Frameworks */,
 				3FDD96A92DDEBD3A005D2E16 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -101,8 +156,16 @@
 				3FDD96A82DDEBD3A005D2E16 /* S4-MAD-ALP.app */,
 				3FDD96B82DDEBD3B005D2E16 /* S4-MAD-ALPTests.xctest */,
 				3FDD96C22DDEBD3B005D2E16 /* S4-MAD-ALPUITests.xctest */,
+				54A6B1762DF4285400930A8F /* S4-MAD-ALP-MAC.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		54A6B18A2DF4496800930A8F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -181,6 +244,32 @@
 			productReference = 3FDD96C22DDEBD3B005D2E16 /* S4-MAD-ALPUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		54A6B1752DF4285400930A8F /* S4-MAD-ALP-MAC */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 54A6B17F2DF4285500930A8F /* Build configuration list for PBXNativeTarget "S4-MAD-ALP-MAC" */;
+			buildPhases = (
+				54A6B1722DF4285400930A8F /* Sources */,
+				54A6B1732DF4285400930A8F /* Frameworks */,
+				54A6B1742DF4285400930A8F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				54A6B1772DF4285400930A8F /* S4-MAD-ALP-MAC */,
+			);
+			name = "S4-MAD-ALP-MAC";
+			packageProductDependencies = (
+				54A6B18B2DF4496800930A8F /* FirebaseCore */,
+				54A6B18D2DF4497100930A8F /* FirebaseDatabase */,
+				54A6B18F2DF4498100930A8F /* FirebaseAuth */,
+				54A6B1912DF4498600930A8F /* FirebaseAppCheck */,
+			);
+			productName = "S4-MAD-ALP-MAC";
+			productReference = 54A6B1762DF4285400930A8F /* S4-MAD-ALP-MAC.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -188,7 +277,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1620;
+				LastSwiftUpdateCheck = 1640;
 				LastUpgradeCheck = 1620;
 				TargetAttributes = {
 					3FDD96A72DDEBD3A005D2E16 = {
@@ -201,6 +290,9 @@
 					3FDD96C12DDEBD3B005D2E16 = {
 						CreatedOnToolsVersion = 16.2;
 						TestTargetID = 3FDD96A72DDEBD3A005D2E16;
+					};
+					54A6B1752DF4285400930A8F = {
+						CreatedOnToolsVersion = 16.4;
 					};
 				};
 			};
@@ -224,6 +316,7 @@
 				3FDD96A72DDEBD3A005D2E16 /* S4-MAD-ALP */,
 				3FDD96B72DDEBD3B005D2E16 /* S4-MAD-ALPTests */,
 				3FDD96C12DDEBD3B005D2E16 /* S4-MAD-ALPUITests */,
+				54A6B1752DF4285400930A8F /* S4-MAD-ALP-MAC */,
 			);
 		};
 /* End PBXProject section */
@@ -250,6 +343,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		54A6B1742DF4285400930A8F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -268,6 +368,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		3FDD96BE2DDEBD3B005D2E16 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		54A6B1722DF4285400930A8F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -431,6 +538,10 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "Verz.S4-MAD-ALP";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -459,6 +570,10 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "Verz.S4-MAD-ALP";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -469,6 +584,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -487,6 +603,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -504,6 +621,7 @@
 		3FDD96D32DDEBD3B005D2E16 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -520,6 +638,7 @@
 		3FDD96D42DDEBD3B005D2E16 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -530,6 +649,60 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = "S4-MAD-ALP";
+			};
+			name = Release;
+		};
+		54A6B1802DF4285500930A8F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "S4-MAD-ALP-MAC/S4_MAD_ALP_MAC.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.3;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "MAD.S4-MAD-ALP-MAC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		54A6B1812DF4285500930A8F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "S4-MAD-ALP-MAC/S4_MAD_ALP_MAC.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.3;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "MAD.S4-MAD-ALP-MAC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -572,6 +745,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		54A6B17F2DF4285500930A8F /* Build configuration list for PBXNativeTarget "S4-MAD-ALP-MAC" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				54A6B1802DF4285500930A8F /* Debug */,
+				54A6B1812DF4285500930A8F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
@@ -610,6 +792,26 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 3F86AB132DE959E600294873 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseDatabase;
+		};
+		54A6B18B2DF4496800930A8F /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3F86AB132DE959E600294873 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		54A6B18D2DF4497100930A8F /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3F86AB132DE959E600294873 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+		54A6B18F2DF4498100930A8F /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3F86AB132DE959E600294873 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		54A6B1912DF4498600930A8F /* FirebaseAppCheck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3F86AB132DE959E600294873 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAppCheck;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
