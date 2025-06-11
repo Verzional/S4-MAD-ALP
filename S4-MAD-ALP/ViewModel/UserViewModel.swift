@@ -47,15 +47,18 @@ class UserViewModel: ObservableObject {
 
     func fetchUser(uid: String) async throws {
         let snapshot = try await db.child("users").child(uid).getData()
-
+        
         if let value = snapshot.value as? [String: Any] {
             self.userModel.name = value["name"] as? String ?? ""
             self.userModel.email = value["email"] as? String ?? ""
+            self.userModel.currXP = value["currXP"] as? Int ?? 0
+            self.userModel.maxXP = value["maxXP"] as? Int ?? 100
+            self.userModel.level = value["level"] as? Int ?? 0
             loadLocalProfileImage(userId: uid)
             await loadColorsFromFirebase()
-
+            
             print("✅ User profile loaded for user ID: \(uid), Name: \(self.userModel.name)")
-
+            
         } else {
             print("⚠️ No user profile found for uid \(uid)")
         }
@@ -74,6 +77,10 @@ class UserViewModel: ObservableObject {
                 "name": userModel.name,
                 "email": userModel.email,
                 "image": "",
+                "level": userModel.level,
+                "currXP": userModel.currXP,
+                "maxXP": userModel.maxXP
+                
             ]
 
             try await db.child("users").child(uid).setValue(userData)
@@ -151,6 +158,7 @@ class UserViewModel: ObservableObject {
             let uid = result.user.uid
             self.user = result.user
             self.userId = uid // Make sure userId is set here after login
+            
 
             DispatchQueue.main.async {
                 self.falseCredential = false
@@ -185,6 +193,28 @@ class UserViewModel: ObservableObject {
             }
         }
     }
+    
+    func saveUserToFirebase() async {
+        guard let uid = user?.uid else {
+            print("Error: User not logged in. Cannot save user to Firebase.")
+            return
+        }
+        
+        let xpData: [String: Any] = [
+            "level": self.userModel.level,
+            "currXP": self.userModel.currXP,
+            "maxXP": self.userModel.maxXP,
+        ]
+        
+        do {
+                try await db.child("users").child(uid).updateChildValues(xpData)
+                print("✅ User XP and level data saved to Firebase.")
+            } catch {
+                print("❌ Error saving user XP data to Firebase: \(error.localizedDescription)")
+            }
+        
+        
+    }
 
     func saveColorsToFirebase() async {
         guard let uid = user?.uid else {
@@ -200,6 +230,7 @@ class UserViewModel: ObservableObject {
             print("❌ Error saving unlocked colors to Firebase: \(error.localizedDescription)")
         }
     }
+    
 
     func loadColorsFromFirebase() async {
         guard let uid = user?.uid else {
@@ -258,6 +289,7 @@ class UserViewModel: ObservableObject {
             self.userModel.currXP -= self.userModel.maxXP
             self.userModel.maxXP = Int(Double(self.userModel.maxXP) * 1.1)
         }
+        Task { await saveUserToFirebase() }
         Task { await saveColorsToFirebase() }
     }
     

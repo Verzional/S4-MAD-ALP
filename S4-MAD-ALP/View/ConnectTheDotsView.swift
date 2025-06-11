@@ -1,76 +1,13 @@
 import PencilKit
 import SwiftUI
 
-/// A simple data structure to define a single puzzle.
-/// It contains a set of points in a normalized coordinate space (0.0 to 1.0).
-struct DotPuzzle {
-    let points: [CGPoint]
-}
-
-/// A view that hosts the "Connect the Dots" minigame.
 struct ConnectTheDotsGameView: View {
-    // MARK: - State Properties
 
-    /// The core view model for managing the PencilKit canvas, injected from the environment.
     @EnvironmentObject var drawingViewModel: DrawingViewModel
-
-    /// The list of available puzzles, now using normalized coordinates for responsiveness.
-    private let puzzles = [
-        DotPuzzle(points: [ // A simple house shape
-            CGPoint(x: 0.2, y: 0.8), CGPoint(x: 0.8, y: 0.8),
-            CGPoint(x: 0.8, y: 0.4), CGPoint(x: 0.5, y: 0.1),
-            CGPoint(x: 0.2, y: 0.4), CGPoint(x: 0.2, y: 0.8),
-        ]),
-        DotPuzzle(points: [ // A star shape
-            CGPoint(x: 0.5, y: 0.1), CGPoint(x: 0.65, y: 0.4),
-            CGPoint(x: 0.95, y: 0.4), CGPoint(x: 0.7, y: 0.6),
-            CGPoint(x: 0.8, y: 0.9), CGPoint(x: 0.5, y: 0.7),
-            CGPoint(x: 0.2, y: 0.9), CGPoint(x: 0.3, y: 0.6),
-            CGPoint(x: 0.05, y: 0.4), CGPoint(x: 0.35, y: 0.4),
-            CGPoint(x: 0.5, y: 0.1),
-        ]),
-        DotPuzzle(points: [
-                    CGPoint(x: 0.5, y: 0.1), CGPoint(x: 0.3, y: 0.2),  // Ear
-                    CGPoint(x: 0.3, y: 0.4), CGPoint(x: 0.4, y: 0.5),  // Head
-                    CGPoint(x: 0.2, y: 0.6), CGPoint(x: 0.2, y: 0.9),  // Back and leg
-                    CGPoint(x: 0.8, y: 0.9), CGPoint(x: 0.8, y: 0.6),  // Front legs
-                    CGPoint(x: 0.6, y: 0.5), CGPoint(x: 0.7, y: 0.4),  // Chest and other ear
-                    CGPoint(x: 0.7, y: 0.2), CGPoint(x: 0.5, y: 0.1),  // Complete head
-                ]),
-                // Puzzle: A simple dog profile
-                DotPuzzle(points: [
-                    CGPoint(x: 0.2, y: 0.4), CGPoint(x: 0.1, y: 0.5),  // Nose
-                    CGPoint(x: 0.2, y: 0.6), CGPoint(x: 0.4, y: 0.55), // Jaw
-                    CGPoint(x: 0.35, y: 0.3), CGPoint(x: 0.5, y: 0.2), // Head
-                    CGPoint(x: 0.6, y: 0.3), CGPoint(x: 0.55, y: 0.5), // Ear
-                    CGPoint(x: 0.7, y: 0.45), CGPoint(x: 0.9, y: 0.5), // Back and tail
-                    CGPoint(x: 0.85, y: 0.8), CGPoint(x: 0.75, y: 0.8),// Back legs
-                    CGPoint(x: 0.5, y: 0.75), CGPoint(x: 0.4, y: 0.8), // Belly and front leg
-                    CGPoint(x: 0.3, y: 0.8), CGPoint(x: 0.2, y: 0.6),  // Front chest
-                ]),
-                // Puzzle: A simple fish
-                DotPuzzle(points: [
-                    CGPoint(x: 0.1, y: 0.5), CGPoint(x: 0.3, y: 0.3), // Mouth and top
-                    CGPoint(x: 0.7, y: 0.4), CGPoint(x: 0.9, y: 0.2), // To tail
-                    CGPoint(x: 0.8, y: 0.5), CGPoint(x: 0.9, y: 0.8), // Tail fin
-                    CGPoint(x: 0.7, y: 0.6), CGPoint(x: 0.3, y: 0.7), // Bottom
-                    CGPoint(x: 0.1, y: 0.5),                          // Back to start
-                ]),
-    ]
-
-    /// The currently active puzzle.
-    @State private var currentPuzzle: DotPuzzle
-
-    /// Tracks the index of the last dot successfully connected. Starts at 0.
-    @State private var lastConnectedDotIndex = 0
-
-    /// Controls whether the "You Win!" overlay is visible.
-    @State private var gameWon = false
-
-    /// Initializes the view and selects a random puzzle to start.
-    init() {
-        _currentPuzzle = State(initialValue: puzzles.randomElement() ?? puzzles[0])
-    }
+    @EnvironmentObject var uvm: UserViewModel
+    @StateObject var connectTheDotsViewModel: ConnectTheDotsViewModel = ConnectTheDotsViewModel()
+    @State private var showingColorPickerSheet = false
+    
 
     // MARK: - Body
     var body: some View {
@@ -98,14 +35,19 @@ struct ConnectTheDotsGameView: View {
                         
                         // The overlay with dots, now drawn on top and scaled to the canvas size.
                         DotsOverlayView(
-                            puzzle: currentPuzzle,
-                            lastConnectedDotIndex: lastConnectedDotIndex,
+                            puzzle: connectTheDotsViewModel.currentPuzzle,
+                            lastConnectedDotIndex: connectTheDotsViewModel.lastConnectedDotIndex,
                             size: canvasSize
                         )
                     }
-                    // This is the core logic. It checks the drawing every time it changes.
+                    
                     .onChange(of: drawingViewModel.drawing) { newDrawing in
-                        checkUserDrawing(newDrawing, in: canvasSize)
+                        connectTheDotsViewModel.checkUserDrawing(newDrawing, in: canvasSize)
+                        
+                        if connectTheDotsViewModel.gameWon == true {
+                                        uvm.gainXP(xp: 100)
+                            drawingViewModel.clear()
+                                    }
                     }
                 }
                 .padding(.horizontal)
@@ -113,61 +55,55 @@ struct ConnectTheDotsGameView: View {
                 // Drawing Tools
                 toolPickerSection
                     .padding(.horizontal)
+                
+                HStack{
+                    brushSizeSection
+                    
+                    Button(action: {
+                        showingColorPickerSheet = true
+                    }) {
+                        Circle()
+                            .fill(drawingViewModel.strokeColor)
+                            .frame(width: 44, height: 44)
+                            .overlay(
+                                Circle().stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                            )
+                            .overlay(
+                                Image(systemName: "paintpalette.fill")
+                                    .foregroundColor(drawingViewModel.strokeColor.isDark ? .white : .black)
+                                    .font(.system(size: 20))
+                            )
+                            .shadow(radius: 2)
+                    }
+                }.padding(.horizontal)
+                
             }
             .padding(.bottom)
             .background(Color(.systemGroupedBackground).ignoresSafeArea())
-            .disabled(gameWon) // Disable drawing when the game is won.
-
-            // "You Win!" Overlay
-            if gameWon {
-                GameWonView(onPlayAgain: resetGame)
+            .disabled(connectTheDotsViewModel.gameWon)
+            .sheet(isPresented: $showingColorPickerSheet) {
+                ColorPickerSheetView(onColorSelect: { selectedColorItem in
+                    drawingViewModel.strokeColor = Color(hex: selectedColorItem.hex)
+                    drawingViewModel.updateToolColorOrWidth()
+                    showingColorPickerSheet = false
+                })
+                .environmentObject(drawingViewModel)
             }
-        }
-    }
 
-    // MARK: - Game Logic
-
-    /// Checks the last stroke drawn by the user to see if it connects the correct dots within the given size.
-    private func checkUserDrawing(_ newDrawing: PKDrawing, in size: CGSize) {
-        guard let lastStroke = newDrawing.strokes.last else { return }
-
-        // Ensure there are more dots to connect.
-        guard lastConnectedDotIndex < currentPuzzle.points.count - 1 else { return }
-
-        // Get the start and end points of the line the user just drew.
-        guard let strokeStartPoint = lastStroke.path.first?.location,
-              let strokeEndPoint = lastStroke.path.last?.location else { return }
-
-        // Define the two dots that need to be connected next, converting their normalized
-        // coordinates to absolute coordinates within the canvas size.
-        let correctStartDot = absolutePoint(for: currentPuzzle.points[lastConnectedDotIndex], in: size)
-        let correctEndDot = absolutePoint(for: currentPuzzle.points[lastConnectedDotIndex + 1], in: size)
-
-        // Check if the stroke connects the dots in the correct order.
-        if isClose(point1: strokeStartPoint, point2: correctStartDot, threshold: 40) &&
-           isClose(point1: strokeEndPoint, point2: correctEndDot, threshold: 40) {
-
-            // Success! Update the state to connect the next dot.
-            lastConnectedDotIndex += 1
-
-            // Check for win condition.
-            if lastConnectedDotIndex >= currentPuzzle.points.count - 1 {
-                withAnimation {
-                    gameWon = true
-                }
+            
+            if connectTheDotsViewModel.gameWon {
+                
+                GameWonView(onPlayAgain: connectTheDotsViewModel.resetGame)
             }
+        }.onAppear(){
+            drawingViewModel.levelCheck(level: uvm.userModel.level)
         }
+        
+        
     }
 
-    /// Resets the game to a new, random puzzle.
-    private func resetGame() {
-        drawingViewModel.clear()
-        currentPuzzle = puzzles.randomElement() ?? puzzles[0]
-        lastConnectedDotIndex = 0
-        withAnimation {
-            gameWon = false
-        }
-    }
+    
+
     
     // MARK: - Helper Functions
 
@@ -181,20 +117,64 @@ struct ConnectTheDotsGameView: View {
         return distance < threshold
     }
 
-    // MARK: - UI Components
-
-    /// A simple section for selecting drawing tools.
-    private var toolPickerSection: some View {
-        HStack(spacing: 20) {
-            toolButton(icon: "pencil.tip", color: .blue) { drawingViewModel.usePen() }
-            toolButton(icon: "eraser", color: .red) { drawingViewModel.useSoftEraser() }
-            Spacer()
-            Button("Clear") {
-                drawingViewModel.clear()
-                lastConnectedDotIndex = 0 // Reset progress if cleared
-            }
-            .padding(.horizontal)
+    private func toolButton(icon: String, toolType: DrawingViewModel.DrawingToolType, action: @escaping () -> Void) -> some View {
+        let isSelected = drawingViewModel.currentTool == toolType
+        let isDisabled: Bool
+        switch toolType {
+        case .pencil: isDisabled = !drawingViewModel.pencilEnabled
+        case .marker: isDisabled = !drawingViewModel.markerEnabled
+        case .crayon: isDisabled = !drawingViewModel.crayonEnabled
+        default: isDisabled = false
         }
+        
+        return Button(action: action) {
+            Image(systemName: icon)
+                .font(.title2)
+                .foregroundColor(isDisabled ? .gray : (isSelected ? Color.white : Color.accentColor))
+                .frame(width: 44, height: 44)
+                .background(isSelected ? Color.accentColor : Color(.systemGray5))
+                .clipShape(Circle())
+                .shadow(radius: isSelected ? 3 : 1)
+        }
+        .disabled(isDisabled)
+    }
+    
+    private var brushSizeSection: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "circle.fill")
+                .font(.system(size: 8))
+                .foregroundColor(.gray)
+            
+            Slider(value: $drawingViewModel.strokeWidth, in: 1...30, step: 1) {
+                Text("Brush Size")
+            }
+            .tint(drawingViewModel.strokeColor)
+            .onChange(of: drawingViewModel.strokeWidth) { _ in
+                drawingViewModel.updateToolColorOrWidth()
+            }
+            
+            Image(systemName: "circle.fill")
+                .font(.system(size: 20))
+                .foregroundColor(.gray)
+            
+            Text("\(Int(drawingViewModel.strokeWidth))pt")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .frame(width: 40, alignment: .trailing)
+        }
+    }
+    
+    private var toolPickerSection: some View {
+        HStack(spacing: 12) {
+            toolButton(icon: "pencil.tip", toolType: .pen, action: drawingViewModel.usePen)
+            toolButton(icon: "pencil", toolType: .pencil, action: drawingViewModel.usePencil)
+            toolButton(icon: "paintbrush.pointed", toolType: .marker, action: drawingViewModel.useMarker)
+            toolButton(icon: "highlighter", toolType: .crayon, action: drawingViewModel.useCrayon)
+            Spacer()
+            toolButton(icon: "eraser", toolType: .softEraser, action: drawingViewModel.useSoftEraser)
+            toolButton(icon: "scissors", toolType: .strokeEraser, action: drawingViewModel.useStrokeEraser)
+        }
+        .padding(.vertical, 5)
     }
 
     /// A reusable button for the tool picker.
@@ -272,18 +252,26 @@ struct GameWonView: View {
         VStack {
             Spacer()
             VStack(spacing: 20) {
-                Text("You Win!")
-                    .font(.system(size: 50, weight: .bold, design: .rounded))
-                    .foregroundColor(.green)
-
-                Button(action: onPlayAgain) {
-                    Label("Play Again", systemImage: "arrow.clockwise.circle.fill")
-                        .font(.title2)
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(Color.blue)
-                        .cornerRadius(15)
+                Text("Congratulations")
+                    .font(.system(size: 40, weight: .bold, design: .rounded))
+                    
+                HStack{
+                    Button(action: onPlayAgain) {
+                        Label("Play Again", systemImage: "arrow.clockwise.circle.fill")
+                            .font(.title2)
+                            .foregroundColor(.white)
+                            .padding()
+                            .background(Color.blue)
+                            .cornerRadius(15)
+                    }
+                    
+                    Button(action:{
+                        
+                    }){
+                        
+                    }
                 }
+                
             }
             .padding(30)
             .background(.thinMaterial)
@@ -351,4 +339,7 @@ private struct CanvasViewWrapper: UIViewControllerRepresentable {
 #Preview {
     ConnectTheDotsGameView()
         .environmentObject(DrawingViewModel())
+        .environmentObject(UserViewModel())
+        .environmentObject(ConnectTheDotsViewModel())
+    
 }

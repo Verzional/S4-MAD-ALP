@@ -11,6 +11,7 @@ struct ColorPickerSheetView: View {
     @EnvironmentObject var viewModel: ColorMixingViewModel
     @EnvironmentObject var userViewModel: UserViewModel
     @Environment(\.dismiss) var dismiss
+    
 
     @State private var searchText: String = ""
     

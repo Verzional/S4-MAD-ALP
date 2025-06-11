@@ -2,6 +2,8 @@ import SwiftUI
 
 struct ProfileView: View {
     @EnvironmentObject var userAuth: UserViewModel
+    @State var toolCount: Int = 0
+    @State var minigames: Int = 0
     
     let columns = [
         GridItem(.adaptive(minimum: 160), spacing: 10)
@@ -10,18 +12,25 @@ struct ProfileView: View {
     var body: some View {
         NavigationStack {
             ZStack(alignment: .top){
-                Circle().fill(
-                    LinearGradient(
-                        gradient: Gradient(colors: [Color(hex: "A7328C"), Color(hex: "f03e3e"), Color(hex: "F9B351")]),
-                        startPoint: .bottomLeading,
-                        endPoint: .topTrailing
+                GeometryReader{ geometry in
+                    
+                    Circle().fill(
+                        LinearGradient(
+                            gradient: Gradient(colors: [Color(hex: "A7328C"), Color(hex: "f03e3e"), Color(hex: "F9B351")]),
+                            startPoint: .bottomLeading,
+                            endPoint: .topTrailing
+                        )
                     )
-                ).offset(y: -240)
+                    .frame(width: geometry.size.width * 2, height: geometry.size.height * 0.65)
+                    .offset(x: -(geometry.size.width * 0.5), y: -geometry.size.height * 0.25)
+                    .ignoresSafeArea()
+                }
+                
                 VStack {
                     
                     Spacer()
                         .frame(height: 40)
-                    VStack(spacing: 20) {
+                    VStack() {
                         ZStack(alignment: .bottom) {
                             GeometryReader { geometry in
                                 Circle()
@@ -65,111 +74,14 @@ struct ProfileView: View {
                             userAuth.userModel.name.isEmpty
                             ? "Guest User" : userAuth.userModel.name
                         )
-                        .font(.largeTitle)
+                        .font(.title2)
                         .fontWeight(.bold)
                         .foregroundColor(.black)
                         .padding(.top, 10)
                         
-                        // --- LEVEL AND PROGRESS BAR SECTION ---
-                            VStack() {
-                                HStack {
-                                    
-                                    Text("Level \(userAuth.userModel.level)")
-                                        .font(.headline)
-                                        .fontWeight(.bold)
-                                    Spacer()
-                                    Text("Next Level: \(userAuth.userModel.level + 1)")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                    
-                                }
-                                
-                                ZStack{
-                                    Rectangle()
-                                        .frame(width: .infinity, height: 22)
-                                        .foregroundColor(.gray.opacity(0.25))
-                                        .cornerRadius(12)
-                                    Rectangle()
-                                        .frame(width: CGFloat(Double(userAuth.userModel.currXP) / Double(userAuth.userModel.maxXP) * 120), height: 8)
-                                        .foregroundColor(Color.blue)
-                                        .cornerRadius(12)
-                                }
-                                
-                            }.padding(.horizontal, 36)
-                            
+                        userLevel.padding(.top, 20)
                         
-                        LazyVGrid(columns: columns, spacing: 20) {
-                                                        
-                                                        // Button 1: Drawings
-                                                        Button(action: {
-                                                            print("Drawings button tapped!")
-                                                        }) {
-                                                            VStack(spacing: 8) { // Consistent content structure
-                                                                Image(systemName: "photo.fill")
-                                                                    .font(.title2)
-                                                                Text("Drawings")
-                                                                    .font(.headline)
-                                                            }
-                                                            .frame(maxWidth: .infinity) // Expands to fill grid cell width
-                                                            .padding(.vertical, 20)    // Consistent vertical padding
-                                                            .background(Color.gray.opacity(0.15))
-                                                            .cornerRadius(15)
-                                                            .foregroundColor(.black)
-                                                        }
-                                                        
-                                                        // Button 2: Colors
-                                                        Button(action: {
-                                                            print("Colors button tapped!")
-                                                        }) {
-                                                            VStack(spacing: 8) { // Consistent content structure
-                                                                Image(systemName: "paintpalette.fill")
-                                                                    .font(.title2)
-                                                                Text("Colors")
-                                                                    .font(.headline)
-                                                            }
-                                                            .frame(maxWidth: .infinity) // Expands to fill grid cell width
-                                                            .padding(.vertical, 20)    // Consistent vertical padding
-                                                            .background(Color.gray.opacity(0.15))
-                                                            .cornerRadius(15)
-                                                            .foregroundColor(.black)
-                                                        }
-                                                        
-                                                        // Button 3: Tools
-                                                        Button(action: {
-                                                            print("Tools button tapped!")
-                                                        }) {
-                                                            VStack(spacing: 8) { // Consistent content structure
-                                                                Image(systemName: "paintbrush.fill")
-                                                                    .font(.title2)
-                                                                Text("Tools")
-                                                                    .font(.headline)
-                                                            }
-                                                            .frame(maxWidth: .infinity) // Expands to fill grid cell width
-                                                            .padding(.vertical, 20)    // Consistent vertical padding
-                                                            .background(Color.gray.opacity(0.15))
-                                                            .cornerRadius(15)
-                                                            .foregroundColor(.black)
-                                                        }
-                                                        
-                                                        // Button 4: My Project
-                                                        Button(action: {
-                                                            print("My Project button tapped!")
-                                                        }) {
-                                                            VStack(spacing: 8) { // Consistent content structure
-                                                                Image(systemName: "folder.fill")
-                                                                    .font(.title2)
-                                                                Text("My Project")
-                                                                    .font(.headline)
-                                                            }
-                                                            .frame(maxWidth: .infinity) // Expands to fill grid cell width
-                                                            .padding(.vertical, 20)    // Consistent vertical padding
-                                                            .background(Color.gray.opacity(0.15))
-                                                            .cornerRadius(15)
-                                                            .foregroundColor(.black)
-                                                        }
-                                                    }
-                        .padding(.horizontal, 36)
-                        
+                        userInfo.padding(.top, 20)
                         
                         
                         Button(action: {
@@ -178,16 +90,25 @@ struct ProfileView: View {
                             }
                         }) {
                             Text("Logout")
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(LinearGradient(
+                                    gradient: Gradient(colors: [Color(hex: "A7328C"), Color(hex: "f03e3e")]),
+                                    startPoint: .bottomLeading,
+                                    endPoint: .topTrailing
+                                ))
+                                .foregroundColor(.white)
+                                .cornerRadius(12)
                                 .font(.headline)
-                                .foregroundColor(.red)
                         }
                         .padding(.top, 20)
+                        .padding(.horizontal, 36)
                         
-                        Spacer() // Pushes content to the center/top
+                        Spacer()
                     }
                     
                     .onAppear {
-                        // Ensure user data is loaded when this view appears
+                       
                         if let uid = userAuth.user?.uid {
                             Task {
                                 do {
@@ -198,18 +119,133 @@ struct ProfileView: View {
                                     )
                                 }
                             }
+                            
+                            if(userAuth.userModel.level<2){
+                                toolCount = 3
+                            }else if(userAuth.userModel.level<4){
+                                toolCount = 4
+                            }else if(userAuth.userModel.level<6){
+                                toolCount = 5
+                            }else if (userAuth.userModel.level<8){
+                                toolCount = 6
+                                minigames = 3
+                            }else if (userAuth.userModel.level<10){
+                                minigames = 4
+                            }
                         }
+                        
+                        
                     }
                 }
             }
         }
     }
     
-
+    private var userInfo: some View{
+        LazyVGrid(columns: columns, spacing: 20) {
+            
+            
+            Button(action: {
+                print("Drawings button tapped!")
+            }) {
+                VStack(spacing: 8) {
+                    Image(systemName: "photo.fill")
+                        .font(.title2)
+                    Text("\(userAuth.projects.count) Drawings")
+                        .font(.headline)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 20)
+                .background(Color.gray.opacity(0.15))
+                .cornerRadius(15)
+                .foregroundColor(.black)
+            }
+            
+            
+            Button(action: {
+                print("Colors button tapped!")
+            }) {
+                VStack(spacing: 8) {
+                    Image(systemName: "paintpalette.fill")
+                        .font(.title2)
+                    Text("\(userAuth.unlockedColors.count) Colors")
+                        .font(.headline)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 20)
+                .background(Color.gray.opacity(0.15))
+                .cornerRadius(15)
+                .foregroundColor(.black)
+            }
+            
+            
+            Button(action: {
+                print("Tools button tapped!")
+            }) {
+                VStack(spacing: 8) {
+                    Image(systemName: "paintbrush.fill")
+                        .font(.title2)
+                    Text("\(toolCount) Tools")
+                        .font(.headline)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 20)
+                .background(Color.gray.opacity(0.15))
+                .cornerRadius(15)
+                .foregroundColor(.black)
+            }
+            
+  
+            Button(action: {
+                print("My Project button tapped!")
+            }) {
+                VStack(spacing: 8) {
+                    Image(systemName: "gamecontroller.fill")
+                        .font(.title2)
+                    Text("\(minigames) Minigames")
+                        .font(.headline)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 20)
+                .background(Color.gray.opacity(0.15))
+                .cornerRadius(15)
+                .foregroundColor(.black)
+            }
+        }
+        .padding(.horizontal, 36)
+    }
+    
+    private var userLevel: some View{
+        VStack() {
+            HStack {
+                
+                Text("Level \(userAuth.userModel.level)")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                Spacer()
+                Text("Next Level: \(userAuth.userModel.level + 1)")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                
+            }
+            
+            ZStack{
+                Rectangle()
+                    .frame(width: .infinity, height: 22)
+                    .foregroundColor(.gray.opacity(0.25))
+                    .cornerRadius(12)
+                Rectangle()
+                    .frame(width: CGFloat(Double(userAuth.userModel.currXP) / Double(userAuth.userModel.maxXP) * 120), height: 8)
+                    .foregroundColor(Color.blue)
+                    .cornerRadius(12)
+            }
+            
+        }.padding(.horizontal, 36)
+    }
 }
 
 
 #Preview {
     ProfileView()
-        .environmentObject(UserViewModel())  // Provide a UserViewModel for preview
+        .environmentObject(UserViewModel())
 }

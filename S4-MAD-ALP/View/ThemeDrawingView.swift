@@ -11,11 +11,14 @@ struct ThemeDrawingView: View {
     @EnvironmentObject var cvm: DrawingViewModel
     @EnvironmentObject var uvm: UserViewModel
     @EnvironmentObject var cmvm: ColorMixingViewModel
+    @EnvironmentObject var tvm: ThemeDrawingViewModel
     
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Text(tvm.generatedPrompt)
             .font(.title3)
             .fontWeight(.bold)
+            .multilineTextAlignment(.center)
+            .padding(.horizontal)
         DrawingView()
             .environmentObject(cvm)
             .environmentObject(uvm)
@@ -28,4 +31,5 @@ struct ThemeDrawingView: View {
         .environmentObject(DrawingViewModel())
         .environmentObject(UserViewModel())
         .environmentObject(ColorMixingViewModel())
+        .environmentObject(ThemeDrawingViewModel())
 }

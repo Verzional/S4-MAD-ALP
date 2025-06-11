@@ -31,3 +31,11 @@ struct MainView: View {
         }
     }
 }
+
+#Preview {
+    MainView()
+        .environmentObject(UserViewModel())
+        .environmentObject(DrawingViewModel())
+        .environmentObject(ColorMixingViewModel())
+        .environmentObject(ThemeDrawingViewModel())
+}

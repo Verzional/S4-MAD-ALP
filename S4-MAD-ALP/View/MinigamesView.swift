@@ -8,6 +8,11 @@
 import SwiftUI
 
 struct MinigamesView: View {
+    @EnvironmentObject var uvm: UserViewModel
+    @State var game1: Bool = true
+    @State var game2: Bool = true
+    
+    
     var body: some View {
         NavigationStack{
             let columns = [
@@ -61,8 +66,9 @@ struct MinigamesView: View {
                         .cornerRadius(15)
                         .foregroundColor(.black)
                     }
+                    .disabled(game1)
                     .padding()
-
+                    
                     NavigationLink(destination: ThemeDrawingView()) {
                         VStack {
                             Image(systemName: "gamecontroller.fill")
@@ -76,12 +82,17 @@ struct MinigamesView: View {
                         .cornerRadius(15)
                         .foregroundColor(.black)
                     }
+                    .disabled(game2)
                     .padding()
-
-
+                    
+                    
                 }.padding()
             }
+        }.onAppear(){
+            if(uvm.userModel.level>10){
+                
             }
+        }
         
     }
 }

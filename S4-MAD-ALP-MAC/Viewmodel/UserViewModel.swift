@@ -18,11 +18,11 @@ class UserViewModel: ObservableObject {
     @Published var profileImage: Image?
     @Published var projects: [DrawingProject] = []
     @Published var unlockedColors: [ColorItem] = []
-
+    
     private let db = Database.database().reference()
     private let defaults = UserDefaults.standard
     private let profileImageKey = "userProfileImage_"
-
+    
     init() {
         self.user = nil
         self.isLogin = false
@@ -31,7 +31,7 @@ class UserViewModel: ObservableObject {
         self.userModel = UserModel()
         loadInitialColors()
     }
-
+    
     private func loadInitialColors() {
         unlockedColors = [
             ColorItem(id: UUID(), name: "White", hex: "#FFFFFF"),
@@ -44,23 +44,48 @@ class UserViewModel: ObservableObject {
             ColorItem(id: UUID(), name: "Cyan", hex: "#00FFFF")
         ]
     }
-
+    
     func fetchUser(uid: String) async throws {
         let snapshot = try await db.child("users").child(uid).getData()
-
+        
         if let value = snapshot.value as? [String: Any] {
             self.userModel.name = value["name"] as? String ?? ""
             self.userModel.email = value["email"] as? String ?? ""
+            self.userModel.currXP = value["currXP"] as? Int ?? 0
+            self.userModel.maxXP = value["maxXP"] as? Int ?? 100
+            self.userModel.level = value["level"] as? Int ?? 0
             loadLocalProfileImage(userId: uid)
             await loadColorsFromFirebase()
-
+            
             print("✅ User profile loaded for user ID: \(uid), Name: \(self.userModel.name)")
-
+            
         } else {
             print("⚠️ No user profile found for uid \(uid)")
         }
     }
-
+    
+    func saveUserToFirebase() async {
+        guard let uid = user?.uid else {
+            print("Error: User not logged in. Cannot save user to Firebase.")
+            return
+        }
+        
+        let xpData: [String: Any] = [
+            "level": self.userModel.level,
+            "currXP": self.userModel.currXP,
+            "maxXP": self.userModel.maxXP,
+        ]
+        
+        do {
+                try await db.child("users").child(uid).updateChildValues(xpData)
+                print("✅ User XP and level data saved to Firebase.")
+            } catch {
+                print("❌ Error saving user XP data to Firebase: \(error.localizedDescription)")
+            }
+        
+        
+    }
+    
     func register(imageData: Data?) async {
         do {
             let result = try await Auth.auth()
@@ -68,17 +93,20 @@ class UserViewModel: ObservableObject {
                     withEmail: userModel.email,
                     password: userModel.password
                 )
-
+            
             let uid = result.user.uid
             let userData: [String: Any] = [
                 "name": userModel.name,
                 "email": userModel.email,
                 "image": "",
+                "level": 0,
+                "currXP": 0,
+                "maxXP": 100
             ]
-
+            
             try await db.child("users").child(uid).setValue(userData)
-
-
+            
+            
             if let imageData = imageData {
                 saveLocalProfileImage(userId: uid, imageData: imageData)
             }
@@ -87,7 +115,7 @@ class UserViewModel: ObservableObject {
             self.userId = uid // Make sure userId is set here after registration
             loadInitialColors()
             await saveColorsToFirebase()
-
+            
             DispatchQueue.main.async {
                 self.userModel.password = ""
                 self.authErrorMessage = ""
@@ -95,9 +123,9 @@ class UserViewModel: ObservableObject {
                 self.registrationSuccess = true
                 self.profileImage = nil
             }
-
+            
             print("✅ Account successfully created for user: \(userModel.email) with UID: \(uid)")
-
+            
         } catch {
             DispatchQueue.main.async {
                 self.registrationSuccess = false
@@ -119,14 +147,14 @@ class UserViewModel: ObservableObject {
             }
         }
     }
-
+    
     private func saveLocalProfileImage(userId: String, imageData: Data) {
         let key = profileImageKey + userId
         let base64String = imageData.base64EncodedString()
         defaults.set(base64String, forKey: key)
         print("✅ Profile image saved locally for user ID: \(userId), Base64 URL: \(base64String.prefix(20))...")
     }
-
+    
     private func loadLocalProfileImage(userId: String) {
         let key = profileImageKey + userId
         if let base64String = defaults.string(forKey: key),
@@ -140,30 +168,30 @@ class UserViewModel: ObservableObject {
             print("⚠️ No local profile image found for user ID: \(userId)")
         }
     }
-
+    
     func login() async {
         do {
             let result = try await Auth.auth().signIn(
                 withEmail: userModel.email,
                 password: userModel.password
             )
-
+            
             let uid = result.user.uid
             self.user = result.user
             self.userId = uid // Make sure userId is set here after login
-
+            
             DispatchQueue.main.async {
                 self.falseCredential = false
                 self.authErrorMessage = ""
                 self.isLogin = true
                 self.loadLocalProfileImage(userId: uid)
             }
-
+            
             print("✅ SignIn Success for user ID: \(uid), Email: \(userModel.email)")
-
+            
             try await fetchUser(uid: uid)
             await loadColorsFromFirebase()
-
+            
         } catch {
             DispatchQueue.main.async {
                 if let errorCode = AuthErrorCode(rawValue: (error as NSError).code) {
@@ -180,12 +208,12 @@ class UserViewModel: ObservableObject {
                 } else {
                     self.authErrorMessage = "Unexpected error occurred."
                 }
-
+                
                 self.falseCredential = true
             }
         }
     }
-
+    
     func saveColorsToFirebase() async {
         guard let uid = user?.uid else {
             print("Error: User not logged in. Cannot save colors to Firebase.")
@@ -200,7 +228,7 @@ class UserViewModel: ObservableObject {
             print("❌ Error saving unlocked colors to Firebase: \(error.localizedDescription)")
         }
     }
-
+    
     func loadColorsFromFirebase() async {
         guard let uid = user?.uid else {
             print("Error: User not logged in. Cannot load colors from Firebase.")
@@ -230,7 +258,7 @@ class UserViewModel: ObservableObject {
             }
         }
     }
-
+    
     func logout() async {
         do {
             try Auth.auth().signOut()
@@ -242,9 +270,9 @@ class UserViewModel: ObservableObject {
             self.profileImage = nil
             self.unlockedColors = []
             loadInitialColors()
-
+            
             print("✅ SignOut Success: User cleared.")
-
+            
         } catch {
             self.falseCredential = true
             print("❌ SignOut Error: \(error.localizedDescription)")
@@ -269,10 +297,10 @@ class UserViewModel: ObservableObject {
             // Optionally, you could show an alert to the user here.
             return
         }
-
+        
         let newProjectInMemory = DrawingProject(name: name, drawing: drawing, userId: currentUserId)
         let success = LocalDrawingStorage.shared.saveDrawingData(newProjectInMemory.drawing, filename: newProjectInMemory.drawingDataFilename)
-            
+        
         if success {
             projects.append(newProjectInMemory)
             saveMetadataIndex()
@@ -281,14 +309,14 @@ class UserViewModel: ObservableObject {
             print("Failed to save drawing data to disk for new project.")
         }
     }
-        
+    
     func deleteProject(_ projectToDelete: DrawingProject) {
         LocalDrawingStorage.shared.deleteDrawingData(filename: projectToDelete.drawingDataFilename)
         projects.removeAll { $0.id == projectToDelete.id }
         saveMetadataIndex()
         print("Project deleted. Remaining projects: \(projects.count)")
     }
-
+    
     private func saveMetadataIndex() {
         let metadataArray = projects.map {
             DrawingProjectMetadata(id: $0.id,
@@ -299,11 +327,11 @@ class UserViewModel: ObservableObject {
         }
         LocalDrawingStorage.shared.saveProjectsMetadata(metadataArray)
     }
-
+    
     func loadProjectsFromDisk() {
         let metadataArray = LocalDrawingStorage.shared.loadProjectsMetadata()
         var loadedProjects: [DrawingProject] = []
-
+        
         for metadata in metadataArray {
             if let drawing = LocalDrawingStorage.shared.loadDrawingData(filename: metadata.drawingDataFilename) {
                 let project = DrawingProject(id: metadata.id,
