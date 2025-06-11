@@ -2,8 +2,8 @@ import SwiftUI
 
 struct ProfileView: View {
     @EnvironmentObject var userAuth: UserViewModel
-    @State var toolCount: Int = 0
-    @State var minigames: Int = 0
+    @State var toolCount: Int = 3
+    @State var minigames: Int = 2
     
     let columns = [
         GridItem(.adaptive(minimum: 160), spacing: 10)
@@ -76,7 +76,6 @@ struct ProfileView: View {
                         )
                         .font(.title2)
                         .fontWeight(.bold)
-                        .foregroundColor(.black)
                         .padding(.top, 10)
                         
                         userLevel.padding(.top, 20)
@@ -121,13 +120,13 @@ struct ProfileView: View {
                             }
                             
                             if(userAuth.userModel.level>=2){
-                                toolCount = 3
-                            }
-                            if(userAuth.userModel.level>=4){
                                 toolCount = 4
                             }
-                            if(userAuth.userModel.level>=6){
+                            if(userAuth.userModel.level>=4){
                                 toolCount = 5
+                            }
+                            if(userAuth.userModel.level>=6){
+                                toolCount = 6
                             }
                             if (userAuth.userModel.level>=8){
                                 toolCount = 6

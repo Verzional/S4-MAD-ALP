@@ -32,6 +32,29 @@ class UserViewModel: ObservableObject {
         loadInitialColors()
     }
     
+    func testInternetConnection() {
+        print("--- Starting Internet Test ---")
+        guard let url = URL(string: "https://www.google.com") else {
+            print("❌ Invalid URL for test.")
+            return
+        }
+
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            if let error = error {
+                print("❌ TEST FAILED: The app cannot connect to the internet.")
+                print("   Error details: \(error.localizedDescription)")
+                return
+            }
+
+            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                print("✅ TEST SUCCESSFUL: The app can connect to the internet.")
+            } else {
+                print("❌ TEST FAILED: Received a non-200 response.")
+            }
+        }
+        task.resume()
+    }
+    
     private func loadInitialColors() {
         unlockedColors = [
             ColorItem(id: UUID(), name: "White", hex: "#FFFFFF"),

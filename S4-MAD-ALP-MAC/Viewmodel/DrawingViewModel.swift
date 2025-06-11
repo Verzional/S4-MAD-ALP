@@ -39,15 +39,16 @@ class DrawingViewModel: ObservableObject {
     @MainActor // Ensure changes happen on the main thread
     func addStroke(_ stroke: PKStroke) {
             
-            var newStrokes = drawing.strokes
-            newStrokes.append(stroke)
-            drawing = PKDrawing(strokes: newStrokes)
+            var newDrawing = drawing
+            newDrawing.strokes.append(stroke)
+            self.drawing = newDrawing
         }
     
     @MainActor
     func removeStroke(_ strokeToRemove: PKStroke) {
-        // PKStroke doesn't conform to Equatable by default, so we compare identifiers
-        drawing.strokes.removeAll { $0.path.creationDate == strokeToRemove.path.creationDate }
+        var newDrawing = drawing
+        newDrawing.strokes.removeAll { $0.path.creationDate == strokeToRemove.path.creationDate }
+        self.drawing = newDrawing
     }
     
     func usePen() {

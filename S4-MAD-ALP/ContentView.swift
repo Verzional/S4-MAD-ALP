@@ -24,5 +24,4 @@ struct ContentView: View {
         .environmentObject(UserViewModel())
         .environmentObject(DrawingViewModel())
         .environmentObject(ColorMixingViewModel())
-        .environmentObject(ThemeDrawingViewModel())
 }

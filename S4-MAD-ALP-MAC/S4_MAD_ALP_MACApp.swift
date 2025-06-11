@@ -6,21 +6,19 @@
 //
 
 import SwiftUI
-import FirebaseAppCheck
 import FirebaseCore
 
 @main
 struct S4_MAD_ALP_MACApp: App {
     @StateObject var userAuth = UserViewModel()
     @StateObject private var cmvm = ColorMixingViewModel()
+    @StateObject var cvm = DrawingViewModel()
     
     init() {
-        FirebaseApp.configure()
-        #if DEBUG
-            let providerFactory = AppCheckDebugProviderFactory()
-            AppCheck.setAppCheckProviderFactory(providerFactory)
-        #endif
-    }
+
+            FirebaseApp.configure()
+            
+        }
 
     
     var body: some Scene {
@@ -28,6 +26,7 @@ struct S4_MAD_ALP_MACApp: App {
             ContentView()
                 .environmentObject(userAuth)
                 .environmentObject(cmvm)
+                .environmentObject(cvm)
         }
     }
 }

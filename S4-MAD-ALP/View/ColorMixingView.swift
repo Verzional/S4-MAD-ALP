@@ -98,13 +98,34 @@ struct ColorMixingView: View {
     
     private var colorGridSection: some View {
         ScrollView {
-            LazyVGrid(columns: columns, spacing: 20) {
-                ForEach(userViewModel.unlockedColors) { color in
-                    colorGridItem(for: color)
+            ZStack{
+                LazyVGrid(columns: columns, spacing: 20) {
+                    ForEach(userViewModel.unlockedColors) { color in
+                        colorGridItem(for: color)
+                    }
                 }
+                    .padding()
+                    .foregroundColor(.clear)
+                    .background(Color(red: 0.85, green: 0.85, blue: 0.85).opacity(0.47))
+                    .cornerRadius(40)
+                    .padding(20)
+                    
+                    
+                
             }
-            .padding(20)
-        }
+            
+        }.background(
+            LinearGradient(
+            stops: [
+            Gradient.Stop(color: Color(red: 0.98, green: 0.7, blue: 0.32), location: 0.00),
+            Gradient.Stop(color: Color(red: 1, green: 0.32, blue: 0.31), location: 0.31),
+            Gradient.Stop(color: Color(red: 0.71, green: 0.34, blue: 0.82), location: 0.77),
+            Gradient.Stop(color: Color(red: 0.13, green: 0.49, blue: 0.91), location: 1.00),
+            ],
+            startPoint: UnitPoint(x: 0.91, y: 0),
+            endPoint: UnitPoint(x: 0.09, y: 1)
+            )
+        )
     }
     
     private func colorGridItem(for color: ColorItem) -> some View {
@@ -133,7 +154,7 @@ struct ColorMixingView: View {
             
             Text(color.name)
                 .font(.caption2)
-                .foregroundColor(.secondary)
+                .foregroundColor(.white)
                 .lineLimit(1)
                 .truncationMode(.tail)
         }

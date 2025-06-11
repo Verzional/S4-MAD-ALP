@@ -13,7 +13,6 @@ import SwiftUI
 struct S4_MAD_ALPApp: App {
     @StateObject private var cvm = DrawingViewModel()
     @StateObject private var cmvm = ColorMixingViewModel()
-    @StateObject private var themeDrawing = ThemeDrawingViewModel()
     @StateObject var userAuth = UserViewModel()
 
     init() {
@@ -29,7 +28,6 @@ struct S4_MAD_ALPApp: App {
             ContentView()
                 .environmentObject(cvm)
                 .environmentObject(cmvm)
-                .environmentObject(themeDrawing)
                 .environmentObject(userAuth)
         }
     }

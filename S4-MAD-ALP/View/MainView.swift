@@ -8,8 +8,6 @@
 import SwiftUI
 
 struct MainView: View {
-    @EnvironmentObject var cvm: CanvasViewModel
-    @EnvironmentObject var cmvm: ColorMixingViewModel
     
     var body: some View {
         TabView {
@@ -29,6 +27,7 @@ struct MainView: View {
                 Label("Profile", systemImage: "person.fill")
             }
         }
+        .background(Color.white)
     }
 }
 
@@ -37,5 +36,4 @@ struct MainView: View {
         .environmentObject(UserViewModel())
         .environmentObject(DrawingViewModel())
         .environmentObject(ColorMixingViewModel())
-        .environmentObject(ThemeDrawingViewModel())
 }

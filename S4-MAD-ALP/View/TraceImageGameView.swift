@@ -45,7 +45,7 @@ struct TraceImageGameView: View {
         // geometryReader ini untuk responsive besar layarnya. Ukuran canvasSize
         // akan lebih besar di landscape (.regular) dan sedikit lebih kecil di portrait (.compact)
         GeometryReader { geometry in
-    
+            
             let canvasSize = min(geometry.size.width, geometry.size.height)
             
             ZStack {
@@ -82,7 +82,7 @@ struct TraceImageGameView: View {
                                 .layoutPriority(1)
                                 .clipShape(RoundedRectangle(cornerRadius: 12))
                                 .border(Color.gray, width: 1)
-                                
+                            
                             
                         }
                         
@@ -158,75 +158,75 @@ struct TraceImageGameView: View {
                         }
                         .padding(.top)
                     }
-                    } else {
-                        VStack {
-                            Text("The Result")
-                                .font(.largeTitle)
-                                .fontWeight(.bold)
-                                .padding(.bottom, 20)
+                } else {
+                    VStack {
+                        Text("The Result")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .padding(.bottom, 20)
+                        
+                        ZStack {
+                            //nampilin imagenya
+                            Image(currentImageKey)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: canvasSize*0.85, height: canvasSize)
+                                .opacity(0.3)
+                                .border(Color.gray, width: 1)
                             
-                            ZStack {
-                                //nampilin imagenya
-                                Image(currentImageKey)
+                            //userDrawnimage ini nyimpen si uiimage yang udah dibuat sebelumnya (pada saat click finish) dalam var finalImage biar bisa ditampilin, resizeable sama scaledtofitnya ini biar bisa menyesuaikan besarnya.
+                            if let finalImage = userDrawnImage {
+                                finalImage
                                     .resizable()
                                     .scaledToFit()
-                                    .frame(width: canvasSize*0.85, height: canvasSize)
-                                    .opacity(0.3)
-                                    .border(Color.gray, width: 1)
-                                
-                                //userDrawnimage ini nyimpen si uiimage yang udah dibuat sebelumnya (pada saat click finish) dalam var finalImage biar bisa ditampilin, resizeable sama scaledtofitnya ini biar bisa menyesuaikan besarnya.
-                                if let finalImage = userDrawnImage {
-                                    finalImage
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(
-                                            width: canvasSize*0.85,
-                                            height: canvasSize
-                                        )
-                                        .border(Color.blue, width: 1)
-                                } else {
-                                    Text("No drawing captured.")
-                                }
+                                    .frame(
+                                        width: canvasSize*0.85,
+                                        height: canvasSize
+                                    )
+                                    .border(Color.blue, width: 1)
+                            } else {
+                                Text("No drawing captured.")
                             }
-                            .padding(.bottom, 20)
-                            
-                            //untuk main ulang, nanti gambar dirandom lagi
-                            Button("Play Again") {
-                                //canvasnya diclean
-                                cvm.clear()
-                                userDrawnImage = nil
-                                drawingFinished = false
-                                
-                                //dirandom
-                                let randomImage = imageNameMap.randomElement()
-                                currentImageKey = randomImage?.key ?? "2"
-                                currentImageName = randomImage?.value ?? "Apple"
-                                
-                                //dibuat default colornya di black
-                                cvm.strokeColor = .black
-                                
-                                //tebal brushnya di 10
-                                cvm.strokeWidth = 10.0
-                                
-                                //pake pen
-                                cvm.usePen()
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(LinearGradient(colors: [Color.blue, Color.purple], startPoint: .leading, endPoint: .trailing))
-                            .foregroundColor(.white)
-                            .cornerRadius(12)
-                            .font(.headline)
-                            .padding(.top, 10)
-                            .padding(.horizontal)
                         }
-                        //kalau ini gk ada, nanti gk ditengah, mencong kanan kiri
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .padding(.bottom, 20)
+                        
+                        //untuk main ulang, nanti gambar dirandom lagi
+                        Button("Play Again") {
+                            //canvasnya diclean
+                            cvm.clear()
+                            userDrawnImage = nil
+                            drawingFinished = false
+                            
+                            //dirandom
+                            let randomImage = imageNameMap.randomElement()
+                            currentImageKey = randomImage?.key ?? "2"
+                            currentImageName = randomImage?.value ?? "Apple"
+                            
+                            //dibuat default colornya di black
+                            cvm.strokeColor = .black
+                            
+                            //tebal brushnya di 10
+                            cvm.strokeWidth = 10.0
+                            
+                            //pake pen
+                            cvm.usePen()
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(LinearGradient(colors: [Color.blue, Color.purple], startPoint: .leading, endPoint: .trailing))
+                        .foregroundColor(.white)
+                        .cornerRadius(12)
+                        .font(.headline)
+                        .padding(.top, 10)
+                        .padding(.horizontal)
                     }
+                    //kalau ini gk ada, nanti gk ditengah, mencong kanan kiri
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
-                
             }
+            
         }
+    }
     
     // the color palette
     private func toolButton(icon: String, toolType: DrawingViewModel.DrawingToolType, action: @escaping () -> Void) -> some View {
@@ -288,72 +288,72 @@ struct TraceImageGameView: View {
                 .frame(width: 40, alignment: .trailing)
         }
     }
+}
+
+// the canvas
+//UIViewController ini bawaan dari swiftUInya, nah biar bisa ditampilin di view, hrus di wrap dulu
+private struct CanvasViewWrapper: UIViewControllerRepresentable {
+    
+    //buat manggil object dari viewmodel, pake environment krn kyk dipanggil panggil ke bbrp view
+    @EnvironmentObject var cvm: DrawingViewModel
+    
+    //coordinator ini gunanya buat jadi jembatan antara swiftUI sama UIKit
+    func makeCoordinator() -> Coordinator {
+        Coordinator(viewModel: cvm)
     }
     
-    // the canvas
-    //UIViewController ini bawaan dari swiftUInya, nah biar bisa ditampilin di view, hrus di wrap dulu
-    private struct CanvasViewWrapper: UIViewControllerRepresentable {
+    //Untuk membuat instance dari UIKit ViewController yang akan ditampilkan di SwiftUI
+    func makeUIViewController(context: Context) -> UIViewController {
         
-        //buat manggil object dari viewmodel, pake environment krn kyk dipanggil panggil ke bbrp view
-        @EnvironmentObject var cvm: DrawingViewModel
+        //instance dari PKCanvasView disimpen dalam canvasView as object
+        let canvasView = PKCanvasView()
         
-        //coordinator ini gunanya buat jadi jembatan antara swiftUI sama UIKit
-        func makeCoordinator() -> Coordinator {
-            Coordinator(viewModel: cvm)
-        }
+        // part of PencilKi
+        canvasView.drawingPolicy = .anyInput
+        canvasView.delegate = context.coordinator
+        //ngambil ke cvm tool-toolnya
+        canvasView.tool = cvm.tool
+        //ngambil PKDrawingnya dri cvm
+        canvasView.drawing = cvm.drawing
+        canvasView.backgroundColor = .clear
         
-        //Untuk membuat instance dari UIKit ViewController yang akan ditampilkan di SwiftUI
-        func makeUIViewController(context: Context) -> UIViewController {
-            
-            //instance dari PKCanvasView disimpen dalam canvasView as object
-            let canvasView = PKCanvasView()
-            
-            // part of PencilKi
-            canvasView.drawingPolicy = .anyInput
-            canvasView.delegate = context.coordinator
-            //ngambil ke cvm tool-toolnya
-            canvasView.tool = cvm.tool
-            //ngambil PKDrawingnya dri cvm
+        let viewController = UIViewController()
+        viewController.view.addSubview(canvasView)
+        canvasView.frame = viewController.view.bounds
+        canvasView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
+        context.coordinator.canvasView = canvasView
+        return viewController
+    }
+    
+    //Sinkronisasi dari SwiftUI ke UIKit saat ada perubahan state, ini bakalan automaticallly update si kalau ada perubahan yang dilakuin di canvasnya (PKDrawing)
+    func updateUIViewController(
+        _ uiViewController: UIViewController,
+        context: Context
+    ) {
+        guard let canvasView = context.coordinator.canvasView else { return }
+        canvasView.tool = cvm.tool
+        if canvasView.drawing != cvm.drawing {
             canvasView.drawing = cvm.drawing
-            canvasView.backgroundColor = .clear
-            
-            let viewController = UIViewController()
-            viewController.view.addSubview(canvasView)
-            canvasView.frame = viewController.view.bounds
-            canvasView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            
-            context.coordinator.canvasView = canvasView
-            return viewController
-        }
-        
-        //Sinkronisasi dari SwiftUI ke UIKit saat ada perubahan state, ini bakalan automaticallly update si kalau ada perubahan yang dilakuin di canvasnya (PKDrawing)
-        func updateUIViewController(
-            _ uiViewController: UIViewController,
-            context: Context
-        ) {
-            guard let canvasView = context.coordinator.canvasView else { return }
-            canvasView.tool = cvm.tool
-            if canvasView.drawing != cvm.drawing {
-                canvasView.drawing = cvm.drawing
-            }
-        }
-        
-        // disini di koordinasiin, biar bisa tau user tu mulai sama selesainya kapan
-        class Coordinator: NSObject, PKCanvasViewDelegate {
-            let cvm: DrawingViewModel
-            weak var canvasView: PKCanvasView?
-            
-            init(viewModel: DrawingViewModel) {
-                self.cvm = viewModel
-            }
-            
-            func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
-                cvm.drawing = canvasView.drawing
-            }
         }
     }
     
-    
+    // disini di koordinasiin, biar bisa tau user tu mulai sama selesainya kapan
+    class Coordinator: NSObject, PKCanvasViewDelegate {
+        let cvm: DrawingViewModel
+        weak var canvasView: PKCanvasView?
+        
+        init(viewModel: DrawingViewModel) {
+            self.cvm = viewModel
+        }
+        
+        func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
+            cvm.drawing = canvasView.drawing
+        }
+    }
+}
+
+
 
 
 #Preview {
