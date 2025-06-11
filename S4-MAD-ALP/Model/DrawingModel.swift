@@ -73,6 +73,7 @@ struct DrawingProjectMetadata: Identifiable, Codable {
     let creationDate: Date
     var lastModifiedDate: Date
     var drawingDataFilename: String
+    var userId: String
 }
 
 

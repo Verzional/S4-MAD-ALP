@@ -27,7 +27,7 @@ struct MainView: View {
                 Label("Profile", systemImage: "person.fill")
             }
         }
-        .background(Color.white)
+        
     }
 }
 

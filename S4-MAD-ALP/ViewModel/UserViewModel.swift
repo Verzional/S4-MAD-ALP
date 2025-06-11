@@ -322,29 +322,43 @@ class UserViewModel: ObservableObject {
     }
 
     private func saveMetadataIndex() {
+        guard let uid = user?.uid else {
+            print("Error: User not logged in. Cannot load colors from Firebase.")
+            return
+        }
         let metadataArray = projects.map {
             DrawingProjectMetadata(id: $0.id,
                                    name: $0.name,
                                    creationDate: $0.creationDate,
                                    lastModifiedDate: $0.lastModifiedDate,
-                                   drawingDataFilename: $0.drawingDataFilename)
+                                   drawingDataFilename: $0.drawingDataFilename,
+                                   userId: uid
+            )
         }
         LocalDrawingStorage.shared.saveProjectsMetadata(metadataArray)
     }
 
     func loadProjectsFromDisk() {
+        guard let uid = user?.uid else {
+            print("Error: User not logged in. Cannot load colors from Firebase.")
+            return
+        }
+        
         let metadataArray = LocalDrawingStorage.shared.loadProjectsMetadata()
         var loadedProjects: [DrawingProject] = []
 
         for metadata in metadataArray {
             if let drawing = LocalDrawingStorage.shared.loadDrawingData(filename: metadata.drawingDataFilename) {
-                let project = DrawingProject(id: metadata.id,
-                                             name: metadata.name,
-                                             drawing: drawing,
-                                             creationDate: metadata.creationDate,
-                                             lastModifiedDate: metadata.lastModifiedDate,
-                                             drawingDataFilename: metadata.drawingDataFilename)
-                loadedProjects.append(project)
+                if(metadata.userId == uid){
+                    let project = DrawingProject(id: metadata.id,
+                                                 name: metadata.name,
+                                                 drawing: drawing,
+                                                 creationDate: metadata.creationDate,
+                                                 lastModifiedDate: metadata.lastModifiedDate,
+                                                 drawingDataFilename: metadata.drawingDataFilename)
+                    loadedProjects.append(project)
+                }
+                
             } else {
                 print("Could not load drawing data for project ID: \(metadata.id)")
             }

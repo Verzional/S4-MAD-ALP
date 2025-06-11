@@ -100,12 +100,22 @@ struct DrawingView: View {
         }
         .onAppear {
             cvm.levelCheck(level: uvm.userModel.level)
-            if let project = existingProject {
-                cvm.drawing = project.drawing
-            }
+                
+                // --- REFACTORED LOGIC ---
+                if let project = existingProject {
+                    // If we are loading an existing project, set its drawing
+                    print("ONAPPEAR: Loading project with \(project.drawing.strokes.count) strokes.")
+                    cvm.drawing = project.drawing
+                } else {
+                    // If this is a NEW project, clear the canvas
+                    print("ONAPPEAR: Creating a new project, clearing canvas.")
+                    cvm.clear()
+                }
+            
+        
         }
         .sheet(isPresented: $presentNameInputView) {
-            
+            ProjectNameInput(uvm: uvm,  drawingToSave: cvm.drawing)
         }
     }
     
@@ -202,9 +212,7 @@ struct EditableCanvasView: NSViewRepresentable {
         // THE FIX: The canvas's local drawing can now be different from the
         // ViewModel's. This ensures that when a stroke is deleted from the
         // ViewModel, the canvas updates to show that deletion.
-        if nsView.drawing.strokes.count != drawing.strokes.count {
-             nsView.drawing = drawing
-        }
+        nsView.drawing = drawing
     }
 }
 

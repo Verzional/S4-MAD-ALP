@@ -28,7 +28,9 @@ class DrawingViewModel: ObservableObject {
         }
     }
     
-    
+    func loadDrawing(from project: DrawingProject) {
+        self.drawing = project.drawing
+    }
     
     enum DrawingToolType {
         case pen, pencil, marker, crayon, softEraser, strokeEraser

@@ -34,7 +34,7 @@ struct ColorMixingView: View {
             colorGridSection
             mixingControlsSection
         }
-        .background(Color(.systemGroupedBackground))
+        .background(Color(.white))
         .sheet(isPresented: $showingNameInputSheet, onDismiss: handleSheetDismiss) {
             ColorNamingSheetView(
                 newColorName: $newColorNameToSave,
@@ -98,7 +98,6 @@ struct ColorMixingView: View {
     
     private var colorGridSection: some View {
         ScrollView {
-            ZStack{
                 LazyVGrid(columns: columns, spacing: 20) {
                     ForEach(userViewModel.unlockedColors) { color in
                         colorGridItem(for: color)
@@ -112,7 +111,6 @@ struct ColorMixingView: View {
                     
                     
                 
-            }
             
         }.background(
             LinearGradient(

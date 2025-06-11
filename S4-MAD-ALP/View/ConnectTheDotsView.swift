@@ -96,6 +96,7 @@ struct ConnectTheDotsGameView: View {
                 GameWonView(onPlayAgain: connectTheDotsViewModel.resetGame)
             }
         }.onAppear(){
+            drawingViewModel.clear()
             drawingViewModel.levelCheck(level: uvm.userModel.level)
         }
         

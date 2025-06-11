@@ -18,7 +18,7 @@ struct ProjectsView: View {
     ]
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 0) {
                 HStack {
                     Text("Your Projects")

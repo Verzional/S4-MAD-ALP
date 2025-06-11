@@ -76,7 +76,7 @@ struct MinigamesView: View {
             }
             
             .navigationTitle("")
-            .navigationBarHidden(true)
+        
         }
     }
     

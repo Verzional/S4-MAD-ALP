@@ -44,8 +44,9 @@ struct ProjectCardView: View {
               .padding([.horizontal, .bottom], 8)
               .padding(.top, 4)
           }
-          .background(Color(.gray)) // Card background
+          .background(Color(nsColor: .controlBackgroundColor)) // Card background
           .cornerRadius(12)
           .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+          
       }
 }
