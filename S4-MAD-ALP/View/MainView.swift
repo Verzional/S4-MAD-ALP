@@ -18,7 +18,7 @@ struct MainView: View {
             }
             
             ProjectsView().tabItem {
-                Label("Canvas", systemImage:"paintbrush.pointed.fill")
+                Label("Drawing", systemImage:"photo.fill")
             }
             
             ColorMixingView().tabItem {

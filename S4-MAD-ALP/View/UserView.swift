@@ -139,7 +139,7 @@ struct UserView: View {
                         Text(isRegister ? "Sign Up!" : "Sign In!")
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color.orange)
+                            .background(LinearGradient(colors: [Color.blue, Color.purple], startPoint: .leading, endPoint: .trailing))
                             .foregroundColor(.white)
                             .cornerRadius(12)
                             .font(.headline)

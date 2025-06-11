@@ -14,40 +14,73 @@ struct MinigamesView: View {
                 GridItem(.flexible()),
                 GridItem(.flexible())
             ]
+            VStack{
+                Text("Minigames")
+                    .font(.title)
+                    .fontWeight(.bold)
+                    .multilineTextAlignment(.leading)
+                LazyVGrid(columns: columns, spacing: 20) {
+                    NavigationLink(destination: TraceImageGameView()) {
+                        VStack {
+                            Image(systemName: "gamecontroller.fill")
+                                .font(.title2)
+                            Text("Memorize game")
+                                .font(.headline)
+                        }
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 30)
+                        .background(Color.gray.opacity(0.15))
+                        .cornerRadius(15)
+                        .foregroundColor(.black)
+                    }
+                    .padding()
+                    NavigationLink(destination: ConnectTheDotsGameView()) {
+                        VStack {
+                            Image(systemName: "gamecontroller.fill")
+                                .font(.title2)
+                            Text("Connect the dots")
+                                .font(.headline)
+                        }
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 30)
+                        .background(Color.gray.opacity(0.15))
+                        .cornerRadius(15)
+                        .foregroundColor(.black)
+                    }
+                    .padding()
+                    NavigationLink(destination: ThemeDrawingView()) {
+                        VStack {
+                            Image(systemName: "gamecontroller.fill")
+                                .font(.title2)
+                            Text("Theme Drawing")
+                                .font(.headline)
+                        }
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 30)
+                        .background(Color.gray.opacity(0.15))
+                        .cornerRadius(15)
+                        .foregroundColor(.black)
+                    }
+                    .padding()
 
-            LazyVGrid(columns: columns, spacing: 20) {
-//                NavigationLink(destination: TraceImageGameView()) {
-//                    VStack {
-//                        Image(systemName: "gamecontroller.fill")
-//                            .font(.title2)
-//                        Text("Memorize game")
-//                            .font(.headline)
-//                    }
-//                    .padding(.vertical, 12)
-//                    .padding(.horizontal, 30)
-//                    .background(Color.gray.opacity(0.15))
-//                    .cornerRadius(15)
-//                    .foregroundColor(.black)
-//                }
-//                .padding(.top, 20)
-//                NavigationLink(destination: CrazyPrompts()) {
-//                    VStack {
-//                        Image(systemName: "gamecontroller.fill")
-//                            .font(.title2)
-//                        Text("Theme Drawing")
-//                            .font(.headline)
-//                    }
-//                    .padding(.vertical, 12)
-//                    .padding(.horizontal, 30)
-//                    .background(Color.gray.opacity(0.15))
-//                    .cornerRadius(15)
-//                    .foregroundColor(.black)
-//                }
-//                .padding(.top, 20)
+                    NavigationLink(destination: ThemeDrawingView()) {
+                        VStack {
+                            Image(systemName: "gamecontroller.fill")
+                                .font(.title2)
+                            Text("Theme Drawing")
+                                .font(.headline)
+                        }
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 30)
+                        .background(Color.gray.opacity(0.15))
+                        .cornerRadius(15)
+                        .foregroundColor(.black)
+                    }
+                    .padding()
 
+
+                }.padding()
             }
-    
-                
             }
         
     }
