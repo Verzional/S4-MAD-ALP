@@ -120,16 +120,20 @@ struct ProfileView: View {
                                 }
                             }
                             
-                            if(userAuth.userModel.level<2){
+                            if(userAuth.userModel.level>=2){
                                 toolCount = 3
-                            }else if(userAuth.userModel.level<4){
+                            }
+                            if(userAuth.userModel.level>=4){
                                 toolCount = 4
-                            }else if(userAuth.userModel.level<6){
+                            }
+                            if(userAuth.userModel.level>=6){
                                 toolCount = 5
-                            }else if (userAuth.userModel.level<8){
+                            }
+                            if (userAuth.userModel.level>=8){
                                 toolCount = 6
                                 minigames = 3
-                            }else if (userAuth.userModel.level<10){
+                            }
+                            if (userAuth.userModel.level>=10){
                                 minigames = 4
                             }
                         }
@@ -229,7 +233,7 @@ struct ProfileView: View {
                 
             }
             
-            ZStack{
+            ZStack(alignment: .leading){
                 Rectangle()
                     .frame(width: .infinity, height: 22)
                     .foregroundColor(.gray.opacity(0.25))

@@ -89,8 +89,11 @@ struct MinigamesView: View {
                 }.padding()
             }
         }.onAppear(){
-            if(uvm.userModel.level>10){
-                
+            if (uvm.userModel.level>=8){
+                game1 = true
+            }
+            if (uvm.userModel.level>=10){
+                game2 = true
             }
         }
         
