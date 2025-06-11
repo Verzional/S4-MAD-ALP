@@ -77,9 +77,9 @@ class UserViewModel: ObservableObject {
                 "name": userModel.name,
                 "email": userModel.email,
                 "image": "",
-                "level": userModel.level,
-                "currXP": userModel.currXP,
-                "maxXP": userModel.maxXP
+                "level": 0,
+                "currXP": 0,
+                "maxXP": 50
                 
             ]
 

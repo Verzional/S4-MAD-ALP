@@ -68,6 +68,7 @@
 				View/MainView.swift,
 				View/MinigamesView.swift,
 				View/ProfileView.swift,
+				View/SplashScreen.swift,
 				ViewModel/ColorMixingViewModel.swift,
 				ViewModel/ConnectTheDotsViewModel.swift,
 				ViewModel/ThemeDrawingViewModel.swift,

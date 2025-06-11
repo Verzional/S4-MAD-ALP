@@ -32,8 +32,13 @@ struct MainView: View {
 }
 
 #Preview {
-    MainView()
-        .environmentObject(UserViewModel())
-        .environmentObject(DrawingViewModel())
-        .environmentObject(ColorMixingViewModel())
+    do{
+        var uvm = UserViewModel()
+        uvm.userModel.level = 10
+        return MainView()
+            .environmentObject(uvm)
+            .environmentObject(DrawingViewModel())
+            .environmentObject(ColorMixingViewModel())
+    }
+    
 }

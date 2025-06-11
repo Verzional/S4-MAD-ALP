@@ -74,6 +74,30 @@ final class UserViewModelTest: XCTestCase {
         
     }
     
+    @MainActor
+    func testLoadProjects() async throws{
+        let viewModel = await UserViewModel()
+        await viewModel.userModel.email = "valentinomg7@gmail.com"
+        await viewModel.userModel.password = "valenDraws"
+        await viewModel.login()
+        await viewModel.loadProjectsFromDisk()
+        XCTAssertTrue(LocalDrawingStorage.shared.loadProjectsMetadata() != nil)
+    }
+    
+    @MainActor
+    func testRegister() async throws{
+        let viewModel = await UserViewModel()
+        await viewModel.userModel.name = "Rex"
+        await viewModel.userModel.email = "rexD@gmail.com"
+        await viewModel.userModel.password = "rexDraws"
+        await viewModel.register(imageData: nil)
+        
+        XCTAssertTrue(viewModel.userId != nil)
+    }
+    
+    
+    
+    
 
     
     

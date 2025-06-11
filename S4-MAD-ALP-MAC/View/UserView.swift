@@ -140,13 +140,7 @@ struct UserView: View {
                             .padding(.top, 12)
                             
                             
-                            Button("Test Connection") {
-                                    userAuth.testInternetConnection()
-                                }
-                                .padding()
-                                .background(Color.green)
-                                .foregroundColor(.white)
-                                .cornerRadius(10)
+            
                             
     
                             Button {

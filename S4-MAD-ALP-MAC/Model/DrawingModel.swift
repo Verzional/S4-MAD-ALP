@@ -68,7 +68,7 @@ struct DrawingProject: Identifiable, Codable {
         let imageFromDrawing = self.drawing.image(from: self.drawing.bounds, scale: scale)
 
             // Now, create the final thumbnail by drawing the generated image into the centered rect.
-            return NSImage(size: size, flipped: false) { _ in
+            return NSImage(size: size, flipped: true) { _ in
                 imageFromDrawing.draw(in: centeredRect)
                 return true
             }

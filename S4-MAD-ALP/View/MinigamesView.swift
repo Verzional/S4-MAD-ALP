@@ -54,7 +54,7 @@ struct MinigamesView: View {
                             createGameLink(
                                 destination: ThemeDrawingView(),
                                 icon: "paintpalette.fill",
-                                title: "Art Class",
+                                title: "Theme Drawing",
                                 color: .purple,
                                 isLocked: uvm.userModel.level < 8,
                                 unlockLevel: 8

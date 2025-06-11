@@ -34,7 +34,10 @@ final class DrawingViewModelTest: XCTestCase {
     
     func testLevelCheck() async throws{
         let viewModel = DrawingViewModel()
-        
+        viewModel.levelCheck(level: 8)
+        XCTAssertTrue(viewModel.crayonEnabled)
+        XCTAssertTrue(viewModel.markerEnabled)
+        XCTAssertTrue(viewModel.pencilEnabled)
     }
     
     func testUsePen() async throws{
@@ -45,7 +48,7 @@ final class DrawingViewModelTest: XCTestCase {
 
     func testUsePencil() async throws{
         let viewModel = DrawingViewModel()
-        await viewModel.usePen()
+        await viewModel.usePencil()
         XCTAssertEqual(viewModel.currentTool, .pencil)
     }
 
