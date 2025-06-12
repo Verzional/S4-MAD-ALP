@@ -34,16 +34,14 @@ final class UserViewModelTest: XCTestCase {
     }
     
     @MainActor
-    func testLogin() async throws {
+    func testLoginLogout() async throws {
         let viewModel = await UserViewModel()
         await viewModel.userModel.email = "valentinomg7@gmail.com"
         await viewModel.userModel.password = "valenDraws"
         await viewModel.login()
         XCTAssertTrue(viewModel.userId != nil)
-        
-        
-        
-        
+        await viewModel.logout()
+        XCTAssertTrue(viewModel.userId == nil)
     }
     
     @MainActor

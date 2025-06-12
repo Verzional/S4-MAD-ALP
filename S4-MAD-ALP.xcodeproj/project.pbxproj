@@ -51,6 +51,7 @@
 				Utilities/LocalDrawingStorage.swift,
 				ViewModel/ColorMixingViewModel.swift,
 				ViewModel/DrawingViewModel.swift,
+				ViewModel/ThemeDrawingViewModel.swift,
 				ViewModel/UserViewModel.swift,
 			);
 			target = 3FDD96B72DDEBD3B005D2E16 /* S4-MAD-ALPTests */;
